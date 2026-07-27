@@ -38,6 +38,7 @@ Check out the :doc:`usage` section for further information, including :doc:`inst
    configurable
    cliref
    reporting
+   cas
    faster
    FAQ <https://github.com/NVIDIA/garak/blob/main/FAQ.md>
 
@@ -69,7 +70,8 @@ Check out the :doc:`usage` section for further information, including :doc:`inst
    intents
    payloads
    _plugins
-   cas
+   _selection
+   _spec
    report
    services
 

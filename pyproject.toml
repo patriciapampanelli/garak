@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "garak"
-version = "0.15.2.pre1"
+version = "0.16.0.pre1"
 authors = [
   { name = "Leon Derczynski", email="lderczynski@nvidia.com" },
   { name = "Subho Majumdar", email="subho@vijil.ai" },
@@ -118,6 +118,7 @@ dependencies = [
   "colorama>=0.4.3",
   "tqdm>=4.67.1",
   "cohere>=5.16.0",
+  "anthropic>=0.40.0",
   "openai>=2.0,<3.0",
   "replicate>=0.8.3",
   "google-api-python-client>=2.0",

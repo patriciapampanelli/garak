@@ -204,14 +204,16 @@ class OpenAICompatible(Generator):
 
                 data_b64 = base64.b64encode(turn.content.data).decode("utf-8")
 
-                if "image" in turn.content.data_type:
+                if "image" in turn.content.data_type[0]:
                     transformed_turn = {
                         "role": turn.role,
                         "content": [
-                            {"type": "input_text", "text": turn.content.text},
+                            {"type": "text", "text": turn.content.text},
                             {
-                                "type": "input_image",
-                                "image_url": f"data:{turn.content.data_type[0]};base64{data_b64}",
+                                "type": "image_url",
+                                "image_url": {
+                                    "url": f"data:{turn.content.data_type[0]};base64,{data_b64}"
+                                },
                             },
                         ],
                     }
@@ -315,6 +317,22 @@ class OpenAICompatible(Generator):
 
         try:
             response = generator.create(**create_args)
+        except (
+            openai.AuthenticationError,
+            openai.PermissionDeniedError,
+        ) as e:
+            # 401 / 403 are terminal: retrying with the same key is pointless.
+            # Raise GarakException *before* the exception leaves this frame so
+            # that multiprocessing.Pool workers can pickle it cleanly.
+            # openai.APIStatusError carries an httpx.Response that is not
+            # picklable, which causes a TypeError in Pool's _handle_results
+            # thread and masks the real error (see github.com/NVIDIA/garak/issues/1357).
+            msg = (
+                f"OpenAI API authentication failed (HTTP {e.status_code}); "
+                f"verify {self.key_env_var} is valid. Original error: {e}"
+            )
+            logging.error(msg)
+            raise garak.exception.GarakException(msg) from None
         except openai.BadRequestError as e:
             msg = "Bad request: " + str(repr(prompt))
             logging.exception(e)

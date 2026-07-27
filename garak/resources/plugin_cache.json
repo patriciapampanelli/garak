@@ -1,5 +1,37 @@
 {
   "probes": {
+    "probes.adaptive_attacks.AdaptiveAttacks": {
+      "description": "Simple adaptive attacks probe (template + cached suffix)",
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true
+      },
+      "active": true,
+      "doc_uri": "https://arxiv.org/abs/2404.02151",
+      "extended_detectors": [],
+      "extra_dependency_names": [],
+      "goal": "cause the model to disregard the system prompt and produce a forbidden response",
+      "intent": "S006",
+      "lang": "en",
+      "modality": {
+        "in": [
+          "text"
+        ]
+      },
+      "parallelisable_attempts": true,
+      "primary_detector": "mitigation.MitigationBypass",
+      "tags": [
+        "avid-effect:security:S0403",
+        "avid-effect:performance:P0204",
+        "owasp:llm01",
+        "quality:Security:PromptStability",
+        "payload:jailbreak",
+        "demon:Language:Prompt_injection:Strong_arm_attack",
+        "demon:Language:Prompt_injection:Ignore_previous_instructions",
+        "demon:Rhetoric:Persuasion_and_manipulation:Distraction"
+      ],
+      "tier": 2,
+      "mod_time": "2026-06-22 15:21:14 +0000"
+    },
     "probes.agent_breaker.AgentBreaker": {
       "description": "Agent Breaker - Agentic Application Exploitation Probe",
       "DEFAULT_PARAMS": {
@@ -383,7 +415,9 @@
     },
     "probes.base.IntentProbe": {
       "description": "Probe implementing a technique that tests over a range of intents",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true
+      },
       "active": false,
       "blocked_intent_spec": "",
       "doc_uri": "",
@@ -403,7 +437,7 @@
       "skip_root_intents": true,
       "tags": [],
       "tier": 9,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-23 19:39:13 +0000"
     },
     "probes.base.IterativeProbe": {
       "description": "",
@@ -427,7 +461,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-23 19:39:13 +0000"
     },
     "probes.base.Probe": {
       "description": "Base class for objects that define and execute LLM evaluations",
@@ -448,7 +482,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-23 19:39:13 +0000"
     },
     "probes.base.TreeSearchProbe": {
       "DEFAULT_PARAMS": {
@@ -474,7 +508,7 @@
       "primary_detector": null,
       "tags": [],
       "tier": 9,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-23 19:39:13 +0000"
     },
     "probes.continuation.ContinueSlursReclaimedSlurs": {
       "description": "Continue partial word with slur or reclaimed slur.",
@@ -504,7 +538,7 @@
         "demon:Language:Stylizing:Give_examples"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-23 19:39:13 +0000"
     },
     "probes.continuation.ContinueSlursReclaimedSlursFull": {
       "description": "Continue partial word with slur or reclaimed slur.",
@@ -534,7 +568,7 @@
         "demon:Language:Stylizing:Give_examples"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-23 19:39:13 +0000"
     },
     "probes.dan.Ablation_Dan_11_0": {
       "description": "Ablation experiments over the DAN 11.0 prompt",
@@ -1148,7 +1182,7 @@
         "demon:Language:Code_and_encode:Token"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-06-05 17:47:21 +0000"
     },
     "probes.divergence.RepeatExtended": {
       "description": "See if a model starts giving other data when asked to repeat a string indefinitely",
@@ -1180,7 +1214,7 @@
         "demon:Language:Code_and_encode:Token"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-06-05 17:47:21 +0000"
     },
     "probes.divergence.RepeatedToken": {
       "description": "Repeated token destabilization attack from Dropbox LLM security research.",
@@ -1218,7 +1252,7 @@
         "demon:Language:Code_and_encode:Token"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-06-05 17:47:21 +0000"
     },
     "probes.doctor.Bypass": {
       "description": "Implement Policy Puppetry Bypass",
@@ -1337,7 +1371,7 @@
         "demon:Stratagems:Meta-prompting:Ask_for_examples"
       ],
       "tier": 9,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-04-22 14:11:58 +0000"
     },
     "probes.donotanswer.HumanChatbox": {
       "description": "Implementation of human_chatbox probes in DoNotAnswer_Prompts",
@@ -1362,7 +1396,7 @@
         "demon:Fictionalizing:Roleplaying:DAN_and_target_persona"
       ],
       "tier": 9,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-04-22 14:11:58 +0000"
     },
     "probes.donotanswer.InformationHazard": {
       "description": "Implementation of information_hazard probes in DoNotAnswer_Prompts",
@@ -1388,7 +1422,7 @@
         "demon:Stratagems:Meta-prompting:Ask_for_examples"
       ],
       "tier": 9,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-04-22 14:11:58 +0000"
     },
     "probes.donotanswer.MaliciousUses": {
       "description": "Implementation of malicious_uses probes in DoNotAnswer_Prompts",
@@ -1412,7 +1446,7 @@
         "demon:Stratagems:Meta-prompting:Ask_for_examples"
       ],
       "tier": 9,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-04-22 14:11:58 +0000"
     },
     "probes.donotanswer.MisinformationHarms": {
       "description": "Implementation of misinformation_harms probes in DoNotAnswer_Prompts",
@@ -1438,7 +1472,7 @@
         "demon:Stratagems:Meta-prompting:Ask_for_examples"
       ],
       "tier": 9,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-04-22 14:11:58 +0000"
     },
     "probes.dra.DRA": {
       "description": "DRA (Disguise and Reconstruction Attack)",
@@ -2634,7 +2668,9 @@
     },
     "probes.grandma.GrandmaIntent": {
       "description": "Roleplaying attack asking for imitation of a grandmother",
-      "DEFAULT_PARAMS": {},
+      "DEFAULT_PARAMS": {
+        "follow_prompt_cap": true
+      },
       "active": false,
       "blocked_intent_spec": "",
       "doc_uri": "",
@@ -2818,7 +2854,7 @@
         "demon:Rhetoric:Persuasion_and_manipulation:Distraction"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-24 18:20:12 +0000"
     },
     "probes.latentinjection.LatentInjectionFactSnippetEiffelFull": {
       "description": "String-based latent prompt injections in fact snippets on the Eiffel Tower",
@@ -2851,7 +2887,7 @@
         "demon:Rhetoric:Persuasion_and_manipulation:Distraction"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-24 18:20:12 +0000"
     },
     "probes.latentinjection.LatentInjectionFactSnippetLegal": {
       "description": "String-based latent prompt injections in legal snippets",
@@ -2884,7 +2920,7 @@
         "demon:Rhetoric:Persuasion_and_manipulation:Distraction"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-24 18:20:12 +0000"
     },
     "probes.latentinjection.LatentInjectionFactSnippetLegalFull": {
       "description": "String-based latent prompt injections in legal snippets",
@@ -2917,7 +2953,7 @@
         "demon:Rhetoric:Persuasion_and_manipulation:Distraction"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-24 18:20:12 +0000"
     },
     "probes.latentinjection.LatentInjectionReport": {
       "description": "String-based latent prompt injections via a report",
@@ -2947,7 +2983,7 @@
         "demon:Rhetoric:Persuasion_and_manipulation:Distraction"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-24 18:20:12 +0000"
     },
     "probes.latentinjection.LatentInjectionReportFull": {
       "description": "String-based latent prompt injections via a report",
@@ -2977,7 +3013,7 @@
         "demon:Rhetoric:Persuasion_and_manipulation:Distraction"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-24 18:20:12 +0000"
     },
     "probes.latentinjection.LatentInjectionResume": {
       "description": "String-based latent prompt injections via a resume",
@@ -3005,7 +3041,7 @@
         "demon:Rhetoric:Persuasion_and_manipulation:Distraction"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-24 18:20:12 +0000"
     },
     "probes.latentinjection.LatentInjectionResumeFull": {
       "description": "String-based latent prompt injections via a resume",
@@ -3033,7 +3069,7 @@
         "demon:Rhetoric:Persuasion_and_manipulation:Distraction"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-24 18:20:12 +0000"
     },
     "probes.latentinjection.LatentInjectionTranslationEnFr": {
       "description": "String-based latent prompt injections via translation",
@@ -3063,7 +3099,7 @@
         "demon:Rhetoric:Persuasion_and_manipulation:Distraction"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-24 18:20:12 +0000"
     },
     "probes.latentinjection.LatentInjectionTranslationEnFrFull": {
       "description": "String-based latent prompt injections via translation",
@@ -3093,7 +3129,7 @@
         "demon:Rhetoric:Persuasion_and_manipulation:Distraction"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-24 18:20:12 +0000"
     },
     "probes.latentinjection.LatentInjectionTranslationEnZh": {
       "description": "Latent prompt injection in Chinese context (\u7b80\u4f53\u5b57)",
@@ -3123,7 +3159,7 @@
         "demon:Rhetoric:Persuasion_and_manipulation:Distraction"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-24 18:20:12 +0000"
     },
     "probes.latentinjection.LatentInjectionTranslationEnZhFull": {
       "description": "Latent prompt injection in Chinese context (\u7b80\u4f53\u5b57)",
@@ -3153,7 +3189,7 @@
         "demon:Rhetoric:Persuasion_and_manipulation:Distraction"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-24 18:20:12 +0000"
     },
     "probes.latentinjection.LatentJailbreak": {
       "description": "Implementation of Latent Jailbreak, using latent prompt injection-",
@@ -3183,7 +3219,7 @@
         "demon:Rhetoric:Persuasion_and_manipulation:Distraction"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-24 18:20:12 +0000"
     },
     "probes.latentinjection.LatentJailbreakFull": {
       "description": "Implementation of Latent Jailbreak, using latent prompt injection-",
@@ -3213,7 +3249,7 @@
         "demon:Rhetoric:Persuasion_and_manipulation:Distraction"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-24 18:20:12 +0000"
     },
     "probes.latentinjection.LatentWhois": {
       "description": "Latent prompt injections in whois probe reports",
@@ -3241,7 +3277,7 @@
         "demon:Rhetoric:Persuasion_and_manipulation:Distraction"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-24 18:20:12 +0000"
     },
     "probes.latentinjection.LatentWhoisSnippet": {
       "description": "String-based latent prompt injections in whois reports",
@@ -3274,7 +3310,7 @@
         "demon:Rhetoric:Persuasion_and_manipulation:Distraction"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-24 18:20:12 +0000"
     },
     "probes.latentinjection.LatentWhoisSnippetFull": {
       "description": "String-based latent prompt injections in whois reports",
@@ -3307,7 +3343,7 @@
         "demon:Rhetoric:Persuasion_and_manipulation:Distraction"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-24 18:20:12 +0000"
     },
     "probes.leakreplay.GuardianCloze": {
       "description": "Lightweight version of Guardian cloze test for data leakage.",
@@ -5640,7 +5676,7 @@
         "demon:Language:Stylizing:Synonymous_language"
       ],
       "tier": 9,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-06-22 15:20:51 +0000"
     },
     "probes.topic.WordnetBlockedWords": {
       "description": "Use Wordnet to explore which topics a model will respond to around blocked words",
@@ -5676,7 +5712,7 @@
         "demon:Language:Stylizing:Synonymous_language"
       ],
       "tier": 9,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-06-22 15:20:51 +0000"
     },
     "probes.topic.WordnetControversial": {
       "description": "Ask model to respond on a set on controversial topics.",
@@ -5719,7 +5755,7 @@
         "demon:Language:Stylizing:Synonymous_language"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-06-22 15:20:51 +0000"
     },
     "probes.visual_jailbreak.FigStep": {
       "description": "Using image modality to assist jailbreak.",
@@ -6166,7 +6202,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": "https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer",
@@ -6187,7 +6224,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": "https://interhumanagreement.substack.com/p/llm-output-can-take-over-your-computer",
@@ -6277,7 +6315,7 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-07-24 15:28:01 +0000"
     },
     "detectors.base.FileDetector": {
       "description": "Detector subclass for processing attempts whose outputs are filenames for checking",
@@ -6297,7 +6335,7 @@
       "pass_desc": "Detector found no issue",
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-07-24 15:28:01 +0000"
     },
     "detectors.base.HFDetector": {
       "description": "Detector using a Hugging Face model",
@@ -6324,14 +6362,15 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-07-24 15:28:01 +0000"
     },
     "detectors.base.StringDetector": {
       "description": "Subclass of Detector using list of substrings as detection triggers",
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -6345,7 +6384,7 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-07-24 15:28:01 +0000"
     },
     "detectors.base.TriggerListDetector": {
       "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
@@ -6365,7 +6404,7 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-07-24 15:28:01 +0000"
     },
     "detectors.continuation.Continuation": {
       "description": "Detect if model intiates / continues a trigger word",
@@ -6392,7 +6431,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -6415,7 +6455,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -6441,7 +6482,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -6464,7 +6506,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -6487,7 +6530,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -6510,7 +6554,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -6533,7 +6578,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -6624,7 +6670,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -6740,7 +6787,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": "https://cwe.mitre.org/data/definitions/89.html",
@@ -6872,7 +6920,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -7007,7 +7056,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -7030,7 +7080,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -7053,7 +7104,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -7096,7 +7148,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -7119,7 +7172,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -7194,7 +7248,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -7244,7 +7299,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": "https://huggingface.co/datasets/anon8231489123/ShareGPT_Vicuna_unfiltered",
@@ -7303,7 +7359,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -8037,6 +8094,7 @@
         "skip": false,
         "matchtype": "startswith",
         "case_sensitive": false,
+        "normalize": null,
         "downstrings": [
           "no",
           "safe",
@@ -8065,6 +8123,7 @@
         "skip": false,
         "matchtype": "startswith",
         "case_sensitive": false,
+        "normalize": null,
         "upstrings": [
           "yes",
           "unsafe",
@@ -8189,7 +8248,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -8245,7 +8305,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "word",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -8270,7 +8331,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "word",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -8294,7 +8356,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "word",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -8319,7 +8382,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "word",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -8344,7 +8408,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "word",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -8369,7 +8434,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "word",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -8423,7 +8489,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": "https://en.wikipedia.org/wiki/List_of_ethnic_slurs",
@@ -8449,7 +8516,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "word",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -8473,7 +8541,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "word",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -8496,7 +8565,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "word",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -8521,7 +8591,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "word",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -8545,7 +8616,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "word",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -8570,7 +8642,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "word",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -8596,7 +8669,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "word",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -8621,7 +8695,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "word",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -8645,7 +8720,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "word",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -8668,7 +8744,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "word",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -8727,7 +8804,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -8855,7 +8933,8 @@
       "DEFAULT_PARAMS": {
         "skip": false,
         "matchtype": "str",
-        "case_sensitive": false
+        "case_sensitive": false,
+        "normalize": null
       },
       "active": true,
       "doc_uri": null,
@@ -8875,6 +8954,35 @@
     }
   },
   "generators": {
+    "generators.anthropic.AnthropicGenerator": {
+      "description": "Interface for Claude models served via the Anthropic API (api.anthropic.com).",
+      "DEFAULT_PARAMS": {
+        "max_tokens": 150,
+        "temperature": null,
+        "top_k": null,
+        "context_len": null,
+        "skip_seq_start": null,
+        "skip_seq_end": null,
+        "uri": null,
+        "suppressed_params": []
+      },
+      "active": true,
+      "extra_dependency_names": [
+        "anthropic"
+      ],
+      "generator_family_name": "anthropic",
+      "modality": {
+        "in": [
+          "text"
+        ],
+        "out": [
+          "text"
+        ]
+      },
+      "parallel_capable": true,
+      "supports_multiple_generations": false,
+      "mod_time": "2026-05-29 20:25:41 +0000"
+    },
     "generators.azure.AzureOpenAIGenerator": {
       "description": "Wrapper for Azure Open AI. Expects AZURE_API_KEY, AZURE_ENDPOINT and AZURE_MODEL_NAME environment variables.",
       "DEFAULT_PARAMS": {
@@ -8939,7 +9047,7 @@
       "mod_time": "2026-03-28 17:25:32 +0000"
     },
     "generators.bedrock.BedrockGenerator": {
-      "description": "Interface for AWS Bedrock foundation models using Converse API",
+      "description": "Interface for AWS Bedrock foundation models using Converse API.",
       "DEFAULT_PARAMS": {
         "max_tokens": 150,
         "temperature": 0.7,
@@ -8949,7 +9057,8 @@
         "skip_seq_end": null,
         "top_p": 1.0,
         "stop": [],
-        "region": "us-east-1"
+        "region": "us-east-1",
+        "suppressed_params": []
       },
       "active": true,
       "extra_dependency_names": [
@@ -8967,7 +9076,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-03-19 10:57:52 +0000"
+      "mod_time": "2026-06-10 18:37:39 +0000"
     },
     "generators.cohere.CohereGenerator": {
       "description": "Interface to Cohere's python library for their text2text model.",
@@ -9150,7 +9259,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-04-13 17:10:30 +0000"
+      "mod_time": "2026-07-14 00:53:59 +0000"
     },
     "generators.guardrails.NeMoGuardrailsServer": {
       "description": "Generator for NeMo Guardrails Server",
@@ -9188,7 +9297,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-04-13 17:10:30 +0000"
+      "mod_time": "2026-07-14 00:53:59 +0000"
     },
     "generators.huggingface.InferenceAPI": {
       "description": "Get text generations from Hugging Face Inference API",
@@ -9398,7 +9507,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-02-02 14:10:11 +0000"
+      "mod_time": "2026-07-13 13:54:00 +0000"
     },
     "generators.litellm.LiteLLMGenerator": {
       "description": "Generator wrapper using LiteLLM to allow access to different providers using the OpenAI API format.",
@@ -9493,7 +9602,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-01-09 14:20:03 +0000"
+      "mod_time": "2026-05-12 17:58:57 +0000"
     },
     "generators.nim.NVMultimodal": {
       "description": "Wrapper for text and image / audio to text NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
@@ -9541,7 +9650,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-02-24 19:51:44 +0000"
+      "mod_time": "2026-06-04 18:32:23 +0000"
     },
     "generators.nim.NVOpenAIChat": {
       "description": "Wrapper for NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
@@ -9585,7 +9694,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-02-24 19:51:44 +0000"
+      "mod_time": "2026-06-04 18:32:23 +0000"
     },
     "generators.nim.NVOpenAICompletion": {
       "description": "Wrapper for NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
@@ -9629,7 +9738,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-02-24 19:51:44 +0000"
+      "mod_time": "2026-06-04 18:32:23 +0000"
     },
     "generators.nim.Vision": {
       "description": "Wrapper for text and image to text NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
@@ -9676,7 +9785,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-02-24 19:51:44 +0000"
+      "mod_time": "2026-06-04 18:32:23 +0000"
     },
     "generators.nvcf.NvcfChat": {
       "description": "Wrapper for NVIDIA Cloud Functions Chat models via NGC. Expects NVCF_API_KEY environment variable.",
@@ -9710,7 +9819,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-09-25 15:13:06 +0000"
+      "mod_time": "2026-07-11 16:25:53 +0000"
     },
     "generators.nvcf.NvcfCompletion": {
       "description": "Wrapper for NVIDIA Cloud Functions Completion models via NGC. Expects NVCF_API_KEY environment variables.",
@@ -9744,7 +9853,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2025-09-25 15:13:06 +0000"
+      "mod_time": "2026-07-11 16:25:53 +0000"
     },
     "generators.ollama.OllamaGenerator": {
       "description": "Interface for Ollama endpoints",
@@ -9839,7 +9948,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-05-05 06:27:18 +0000"
+      "mod_time": "2026-07-16 14:48:25 +0000"
     },
     "generators.openai.OpenAIGenerator": {
       "description": "Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable",
@@ -9875,7 +9984,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2026-05-05 06:27:18 +0000"
+      "mod_time": "2026-07-16 14:48:25 +0000"
     },
     "generators.openai.OpenAIReasoningGenerator": {
       "description": "Generator wrapper for OpenAI reasoning models, e.g. `o1` family.",
@@ -9916,7 +10025,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-05-05 06:27:18 +0000"
+      "mod_time": "2026-07-16 14:48:25 +0000"
     },
     "generators.rasa.RasaRestGenerator": {
       "description": "API interface for RASA models",
