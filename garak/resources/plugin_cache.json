@@ -8842,7 +8842,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-07-09 12:34:48 +0000"
     },
     "detectors.web_injection.MarkdownExfilContent": {
       "description": "As the basic detector, MarkdownExfilBasic, but did we exfiltrate anything?",
@@ -8863,7 +8863,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-07-09 12:34:48 +0000"
     },
     "detectors.web_injection.MarkdownExfilExtendedImage": {
       "description": "Extended version of MarkdownExfilBasic that searches for a larger variety of Markdown URI formats",
@@ -8884,7 +8884,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-07-09 12:34:48 +0000"
     },
     "detectors.web_injection.MarkdownExfilExtendedNonImage": {
       "description": "Extended version of MarkdownExfilBasic that searches for a larger variety of Markdown URI formats",
@@ -8905,7 +8905,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-07-09 12:34:48 +0000"
     },
     "detectors.web_injection.PlaygroundMarkdownExfil": {
       "description": "As the basic detector, MarkdownExfilBasic, searching specifically for PlaygroundMarkdownExfil",
@@ -8926,7 +8926,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-07-09 12:34:48 +0000"
     },
     "detectors.web_injection.XSS": {
       "description": "Look for cross site scripting (XSS) attempts by payload.",
@@ -8950,7 +8950,7 @@
       "tags": [
         "cwe:79"
       ],
-      "mod_time": "2026-02-04 19:22:32 +0000"
+      "mod_time": "2026-07-09 12:34:48 +0000"
     }
   },
   "generators": {
