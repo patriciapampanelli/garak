@@ -82,7 +82,7 @@ def test_module_with_only_inactive_probes_gives_clear_message(capsys):
 def test_inactive_module_flagged_when_active_probe_also_selected(capsys):
     # issue #830: an all-inactive module must still be flagged even when an
     # active family is selected too (regression guard for the run.spec refactor)
-    cli.main(["-m", "test", "-p", "dan,test", "-d", "always.Pass", "-g", "1", "--narrow_output"])
+    cli.main(["-t", "test", "-p", "dan,test", "-d", "always.Pass", "-g", "1", "--narrow_output"])
     output = ANSI_ESCAPE.sub("", capsys.readouterr().out)
     assert "inactive" in output, "all-inactive module must be flagged, not silently dropped"
 
@@ -90,7 +90,7 @@ def test_inactive_module_flagged_when_active_probe_also_selected(capsys):
 def test_inactive_module_skipped_with_skip_unknown(capsys):
     cli.main(
         [
-            "-m",
+            "-t",
             "test",
             "-p",
             "dan,test",
@@ -167,7 +167,7 @@ def test_legacy_probes_and_run_spec_select_same_run(capsys):
 
     cli.main(
         [
-            "-m",
+            "-t",
             "test",
             "-p",
             "test.Blank",
@@ -184,7 +184,7 @@ def test_legacy_probes_and_run_spec_select_same_run(capsys):
 
     cli.main(
         [
-            "-m",
+            "-t",
             "test",
             "--spec",
             "probes.test.Blank",

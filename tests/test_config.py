@@ -1006,7 +1006,7 @@ def test_site_yaml_overrides_max_workers(capsys):
 @pytest.mark.parametrize("parallel_attempts", [1, 4])
 def test_parallel_attempts_run_completes(parallel_attempts):
     args = (
-        f"--parallel_attempts {parallel_attempts} -m test.Blank -p test.Test -g 1"
+        f"--parallel_attempts {parallel_attempts} -t test.Blank -p test.Test -g 1"
     ).split()
     garak.cli.main(args)
 
