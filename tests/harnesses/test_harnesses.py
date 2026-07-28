@@ -102,6 +102,6 @@ def test_harness_detector_progress_shows_probe_name(mocker, monkeypatch):
 
     assert captured_descriptions, "detector progress bar should have a description"
     assert any(
-        "probes.test.Blank" in desc and "detectors.always.Pass" in desc
+        "test.Blank" in desc and "always.Pass" in desc
         for desc in captured_descriptions
     ), "detector progress description should include probe and detector names"

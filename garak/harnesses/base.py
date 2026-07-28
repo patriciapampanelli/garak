@@ -133,19 +133,19 @@ class Harness(Configurable):
     def _end_run_hook(self):
         _config.set_http_lib_agents(self._http_lib_user_agents)
 
-    def _run_detector(
-        self, probe_result_attempts, detector_instance, probe_display_name=None
-    ) -> None:
+    def _run_detector(self, probe_result_attempts, detector_instance) -> None:
         logging.debug("harness: run detector %s", detector_instance.detectorname)
         attempt_iterator = tqdm.tqdm(probe_result_attempts, leave=False)
         detector_probe_name = detector_instance.detectorname.replace(
             "garak.detectors.", ""
         )
-        # issue #324: include the probe name in the detector progress bar so
-        # long runs show which probe's results are being scored
-        if probe_display_name:
+        # include the probe name in the detector progress bar so long runs
+        # show which probe's results are being scored (#324); attempts carry
+        # the probe classname already, so no caller-side plumbing is needed
+        if len(probe_result_attempts) > 0:
+            probe_display_name = probe_result_attempts[0].probe_classname
             attempt_iterator.set_description(
-                f"{probe_display_name}/detectors.{detector_probe_name}"
+                f"{probe_display_name}/{detector_probe_name}"
             )
         else:
             attempt_iterator.set_description("detectors." + detector_probe_name)
@@ -215,13 +215,9 @@ class Harness(Configurable):
                 attempt_results, (list, types.GeneratorType)
             ), "probing should always return an ordered iterable"
 
-            # issue #324: pass the probe name through so detector progress
-            # bars identify which probe's results are being scored
-            probe_display_name = probe.probename.replace("garak.", "")
-
             if not isinstance(probe, garak.probes.base.IntentProbe):
                 for d in detectors:
-                    self._run_detector(attempt_results, d, probe_display_name)
+                    self._run_detector(attempt_results, d)
 
             else:
                 # extract detectors to be run
@@ -270,7 +266,7 @@ class Harness(Configurable):
                         mapping = intent_to_detector[a.intent]
                         if detector_name in mapping:
                             attempt_subset.append(a)
-                    self._run_detector(attempt_subset, d, probe_display_name)
+                    self._run_detector(attempt_subset, d)
 
                 # detectors resolved via the intent path are not in the
                 # harness-level detector list snapshotted at run start, so emit
