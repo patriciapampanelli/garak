@@ -214,10 +214,11 @@ def test_get_detector_metrics_returns_singleton():
 def test_bundled_metrics_file_loads():
     """The bundled metrics summary must load from the path it ships at.
 
-    Regression test for #2003: the loader looked for a `detectors_eval`
-    directory while the data ships as `detectors-eval`, so the file was never
-    found. The failure surfaced only as a debug log, leaving every detector on
-    the (1.0, 1.0) fallback.
+    Regression test for #2003: the loader wrapped the data path in `Path()`,
+    which drops `LocalDataPath` resolution and pins the lookup to the data dir
+    rather than falling back to the bundled copy, and the directory name did
+    not match. The failure surfaced only as a debug log, leaving every detector
+    on the (1.0, 1.0) fallback.
     """
     garak.analyze.detector_metrics._detector_metrics_cache = None
     dm = garak.analyze.detector_metrics.DetectorMetrics()

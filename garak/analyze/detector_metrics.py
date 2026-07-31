@@ -24,7 +24,7 @@ class DetectorMetrics:
         # this in Path() would pin the lookup to the data dir alone
         try:
             metrics_file = (
-                data_path / "detectors-eval" / "detector_metrics_summary.json"
+                data_path / "detectors_eval" / "detector_metrics_summary.json"
             )
         except GarakException as e:
             logging.debug(
