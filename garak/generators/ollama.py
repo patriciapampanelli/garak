@@ -61,6 +61,7 @@ class OllamaGenerator(Generator):
         "max_tokens": ("num_predict", int),
         "temperature": ("temperature", float),
         "top_k": ("top_k", int),
+        "seed": ("seed", int),
     }
 
     def __init__(self, name="", config_root=_config):

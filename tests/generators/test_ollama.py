@@ -239,6 +239,7 @@ def test_ollama_chat_forwards_generation_options(respx_mock):
     gen.max_tokens = 10
     gen.temperature = 0.1
     gen.top_k = 3
+    gen.seed = 42
     conv = Conversation([Turn("user", Message("Bla bla"))])
     gen.generate(conv)
 
@@ -246,6 +247,7 @@ def test_ollama_chat_forwards_generation_options(respx_mock):
     assert sent["options"]["num_predict"] == 10
     assert sent["options"]["temperature"] == 0.1
     assert sent["options"]["top_k"] == 3
+    assert sent["options"]["seed"] == 42
 
 
 @pytest.mark.skipif(
@@ -298,7 +300,7 @@ def test_ollama_chat_sends_default_max_tokens(respx_mock):
     gen.generate(conv)
 
     sent = json.loads(respx_mock.calls.last.request.content)
-    assert sent["options"] == {"num_predict": 150}
+    assert sent["options"] == {"num_predict": gen.max_tokens}
 
 
 @pytest.mark.skipif(
@@ -328,4 +330,4 @@ def test_ollama_chat_honours_suppressed_params(respx_mock):
 
     sent = json.loads(respx_mock.calls.last.request.content)
     assert "temperature" not in sent["options"]
-    assert sent["options"]["num_predict"] == 150
+    assert sent["options"]["num_predict"] == gen.max_tokens
