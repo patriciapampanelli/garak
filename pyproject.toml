@@ -116,6 +116,8 @@ authors = [
   { name = "feiiiiii5" },
   { name = "Matt Van Horn" },
   { name = "Tim Ren" },
+  { name = "Anurag Jain" },
+  { name = "Manu Nicholas Jacob" },
 ]
 license = "Apache-2.0"
 license-files = ["LICENSE"]
