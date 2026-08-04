@@ -1581,7 +1581,7 @@
         "demon:Language:Code_and_encode:Data_encoding"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-31 15:55:35 +0000"
     },
     "probes.encoding.InjectAtbash": {
       "description": "Atbash Probe Credit: Nakul-Rajpal",
@@ -1617,7 +1617,7 @@
         "demon:Language:Code_and_encode:Data_encoding"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-31 15:55:35 +0000"
     },
     "probes.encoding.InjectBase16": {
       "description": "Probe for susceptibility to base16 encoded injections\"",
@@ -1653,7 +1653,7 @@
         "demon:Language:Code_and_encode:Data_encoding"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-31 15:55:35 +0000"
     },
     "probes.encoding.InjectBase2048": {
       "description": "Probe for susceptibility to Base2048 encoding injections",
@@ -1689,7 +1689,7 @@
         "demon:Language:Code_and_encode:Data_encoding"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-31 15:55:35 +0000"
     },
     "probes.encoding.InjectBase32": {
       "description": "Probe for susceptibility to base32 encoded injections",
@@ -1725,7 +1725,7 @@
         "demon:Language:Code_and_encode:Data_encoding"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-31 15:55:35 +0000"
     },
     "probes.encoding.InjectBase64": {
       "description": "Probe for susceptibility to base64 encoded injections",
@@ -1761,7 +1761,7 @@
         "demon:Language:Code_and_encode:Data_encoding"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-31 15:55:35 +0000"
     },
     "probes.encoding.InjectBraille": {
       "description": "Probe for susceptibility to Braille encoding injections. Credit Wally#3422",
@@ -1797,7 +1797,7 @@
         "demon:Language:Code_and_encode:Data_encoding"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-31 15:55:35 +0000"
     },
     "probes.encoding.InjectEcoji": {
       "description": "Probe for susceptibility to Ecoji encoding.",
@@ -1833,7 +1833,7 @@
         "demon:Language:Code_and_encode:Data_encoding"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-31 15:55:35 +0000"
     },
     "probes.encoding.InjectHex": {
       "description": "Probe for susceptibility to hex encoded injections",
@@ -1869,7 +1869,7 @@
         "demon:Language:Code_and_encode:Data_encoding"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-31 15:55:35 +0000"
     },
     "probes.encoding.InjectLeet": {
       "description": "Probe for susceptibility to 31337 encoding.",
@@ -1905,7 +1905,7 @@
         "demon:Language:Code_and_encode:Data_encoding"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-31 15:55:35 +0000"
     },
     "probes.encoding.InjectMime": {
       "description": "Probe for susceptibility to MIME encoding injections",
@@ -1941,7 +1941,7 @@
         "demon:Language:Code_and_encode:Data_encoding"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-31 15:55:35 +0000"
     },
     "probes.encoding.InjectMorse": {
       "description": "Probe for susceptibility to Morse encoding. Credit Wally#3422",
@@ -1977,7 +1977,7 @@
         "demon:Language:Code_and_encode:Data_encoding"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-31 15:55:35 +0000"
     },
     "probes.encoding.InjectNato": {
       "description": "Probe for susceptibility to Nato phonetic alphabet encoding.",
@@ -2013,7 +2013,7 @@
         "demon:Language:Code_and_encode:Data_encoding"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-31 15:55:35 +0000"
     },
     "probes.encoding.InjectQP": {
       "description": "Probe for susceptibility to QP encoded injections",
@@ -2049,7 +2049,7 @@
         "demon:Language:Code_and_encode:Data_encoding"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-31 15:55:35 +0000"
     },
     "probes.encoding.InjectROT13": {
       "description": "Probe for susceptibility to ROT13 encoding injections",
@@ -2085,7 +2085,7 @@
         "demon:Language:Code_and_encode:Data_encoding"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-31 15:55:35 +0000"
     },
     "probes.encoding.InjectSneakyBits": {
       "description": "Probe for susceptibility to unicode variant selector ASCII smuggling",
@@ -2122,7 +2122,7 @@
         "demon:Language:Code_and_encode:Token"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-31 15:55:35 +0000"
     },
     "probes.encoding.InjectUU": {
       "description": "Probe for susceptibility to UU encoded injections",
@@ -2158,7 +2158,7 @@
         "demon:Language:Code_and_encode:Data_encoding"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-31 15:55:35 +0000"
     },
     "probes.encoding.InjectUnicodeTagChars": {
       "description": "Probe for susceptibility to unicode tag ASCII smuggling",
@@ -2196,7 +2196,7 @@
         "demon:Language:Code_and_encode:Token"
       ],
       "tier": 1,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-31 15:55:35 +0000"
     },
     "probes.encoding.InjectUnicodeVariantSelectors": {
       "description": "Probe for susceptibility to unicode variant selector ASCII smuggling",
@@ -2233,7 +2233,7 @@
         "demon:Language:Code_and_encode:Token"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-31 15:55:35 +0000"
     },
     "probes.encoding.InjectZalgo": {
       "description": "Probe for susceptibility to Zalgo encoding.",
@@ -2269,7 +2269,7 @@
         "demon:Language:Code_and_encode:Data_encoding"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-07-31 15:55:35 +0000"
     },
     "probes.exploitation.JinjaTemplatePythonInjection": {
       "description": "Attempts to execute Python code via Jinja templating",
@@ -6894,7 +6894,7 @@
       },
       "pass_desc": "Response contains expected glitch token",
       "tags": [],
-      "mod_time": "2026-02-04 19:07:43 +0000"
+      "mod_time": "2026-08-01 02:29:26 +0000"
     },
     "detectors.goodside.PlainJSON": {
       "description": "Is the output valid JSON with no preamble?",
@@ -6913,7 +6913,7 @@
       },
       "pass_desc": "Response contains preamble or invalid JSON - format instruction not followed",
       "tags": [],
-      "mod_time": "2026-02-04 19:07:43 +0000"
+      "mod_time": "2026-08-01 02:29:26 +0000"
     },
     "detectors.goodside.RileyIsnt": {
       "description": "Look for mentions of being Canadian, female pronouns, being a singer",
@@ -6935,7 +6935,7 @@
       },
       "pass_desc": "Response does not contain false biographical claims",
       "tags": [],
-      "mod_time": "2026-02-04 19:07:43 +0000"
+      "mod_time": "2026-08-01 02:29:26 +0000"
     },
     "detectors.judge.Jailbreak": {
       "description": "Uses the configured model to detect if responses contain harmful content achieving the adversarial goal (JailbreakBench methodology)",
