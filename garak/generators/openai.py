@@ -25,6 +25,20 @@ from garak.attempt import Message, Conversation
 import garak.exception
 from garak.generators.base import Generator
 
+# HTTP status codes that indicate a transient server-side condition worth retrying.
+# 408 (Request Timeout), 502 (Bad Gateway), 503 (Service Unavailable), 504 (Gateway Timeout)
+# arrive as openai.APIStatusError and are not caught by InternalServerError (5xx only)
+# or APITimeoutError (client-side read timeout, not an HTTP-level status code).
+_TRANSIENT_HTTP_CODES = frozenset({408, 502, 503, 504})
+
+
+def _is_terminal_api_error(exc: Exception) -> bool:
+    """Return True when an APIStatusError should NOT be retried (terminal, non-transient)."""
+    return isinstance(exc, openai.APIStatusError) and (
+        exc.status_code not in _TRANSIENT_HTTP_CODES
+    )
+
+
 # lists derived from https://platform.openai.com/docs/models
 chat_models = (
     "gpt-5-nano",
@@ -270,9 +284,11 @@ class OpenAICompatible(Generator):
             openai.InternalServerError,
             openai.APITimeoutError,
             openai.APIConnectionError,
+            openai.APIStatusError,
             garak.exception.GeneratorBackoffTrigger,
         ),
         max_value=70,
+        giveup=_is_terminal_api_error,
     )
     def _call_model(
         self, prompt: Union[Conversation, List[dict]], generations_this_call: int = 1
