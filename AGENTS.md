@@ -64,6 +64,7 @@ Follow the documentation on contributing too and extending garak. See:
 * For selecting contributions: `docs/source/contributing.rst`
 * For writing code: `docs/source/extending.rst`
 * When writing a probe: `docs/source/extending.probe.rst`
+* For intent-based scanning concepts: `docs/source/cas.rst`
 * When writing a generator: `docs/source/extending.generator.rst`
 
 ### Commit messages
@@ -87,6 +88,7 @@ Signed-off-by: Your Name <your.email@example.com>
 - Always avoid adding new dependencies. Use the `extra_dependency_names` functionality if essential.
 - Keep documentation of garak architecture in the docs/ dir up to date - though use docstrings in the first instance if possible.
 - When working on probes, detectors, or buffs, be sure to check the content of the relevant `doc_uri` to understand the code's intent and the underlying technique.
+- Prefer `garak.probes.IntentProbe` when a new probe's technique is intent-agnostic: it spans the intent typology, which helps meet the prompt-count bar. See `docs/source/extending.probe.rst` and `docs/source/cas.rst`.
 - Use the payloads, data, and services mechanisms when suitable.
 - Use hooks where appropriate; add new hooks if this is efficient.
 - Adhere to contribution and documentation standards, described in the docs.
