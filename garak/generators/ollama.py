@@ -48,10 +48,10 @@ class OllamaGenerator(Generator):
         if hasattr(self, "verify_ssl") and self.verify_ssl is not None:
             client_kwargs["verify"] = self.verify_ssl
         if self.api_key:
-            client_kwargs["headers"] = {
-                **client_kwargs.get("headers", {}),
+            headers = client_kwargs.get("headers", {}) | {
                 "Authorization": f"Bearer {self.api_key}",
             }
+            client_kwargs["headers"] = headers
 
         self.client = self.ollama.Client(
             self.host, timeout=self.timeout, **client_kwargs
