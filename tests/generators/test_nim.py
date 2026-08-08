@@ -23,6 +23,7 @@ def _make_api_status_error(status_code: int, url: str = "http://localhost/v1/cha
 
 def test_transient_http_codes_set():
     assert 408 in _TRANSIENT_HTTP_CODES
+    assert 429 in _TRANSIENT_HTTP_CODES
     assert 502 in _TRANSIENT_HTTP_CODES
     assert 503 in _TRANSIENT_HTTP_CODES
     assert 504 in _TRANSIENT_HTTP_CODES
@@ -33,7 +34,7 @@ def test_transient_http_codes_set():
     assert 422 not in _TRANSIENT_HTTP_CODES
 
 
-@pytest.mark.parametrize("code", [408, 502, 503, 504])
+@pytest.mark.parametrize("code", [408, 429, 502, 503, 504])
 def test_is_terminal_api_error_returns_false_for_transient(code):
     """Transient codes should NOT give up — backoff must retry them."""
     exc = _make_api_status_error(code)
@@ -50,6 +51,25 @@ def test_is_terminal_api_error_returns_true_for_fatal(code):
 def test_is_terminal_api_error_ignores_non_api_status_error():
     """Non-APIStatusError exceptions are not touched by the giveup function."""
     assert _is_terminal_api_error(ValueError("unrelated")) is False
+
+
+def test_is_terminal_api_error_rate_limit_never_terminal():
+    """RateLimitError (429) is a dedicated backoff-tuple entry; giveup must not fire."""
+    request = httpx.Request("POST", "http://localhost/v1/chat/completions")
+    response = httpx.Response(429, request=request)
+    exc = openai.RateLimitError("rate limited", response=response, body=None)
+    assert _is_terminal_api_error(exc) is False
+
+
+def test_is_terminal_api_error_internal_server_error_never_terminal():
+    """InternalServerError (500/503) is a dedicated backoff-tuple entry; giveup must not fire."""
+    request = httpx.Request("POST", "http://localhost/v1/chat/completions")
+    for code in (500, 503):
+        response = httpx.Response(code, request=request)
+        exc = openai.InternalServerError(f"server error {code}", response=response, body=None)
+        assert _is_terminal_api_error(exc) is False, (
+            f"InternalServerError({code}) must not be treated as terminal"
+        )
 
 
 @pytest.fixture
