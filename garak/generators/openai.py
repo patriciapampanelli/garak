@@ -25,28 +25,6 @@ from garak.attempt import Message, Conversation
 import garak.exception
 from garak.generators.base import Generator
 
-# HTTP status codes that indicate a transient server-side condition worth retrying.
-# 408 (Request Timeout), 502 (Bad Gateway), 503 (Service Unavailable), 504 (Gateway Timeout)
-# arrive as openai.APIStatusError and are not caught by InternalServerError (5xx only)
-# or APITimeoutError (client-side read timeout, not an HTTP-level status code).
-_TRANSIENT_HTTP_CODES = frozenset({408, 429, 502, 503, 504})
-
-
-def _is_terminal_api_error(exc: Exception) -> bool:
-    """Return True when an APIStatusError should NOT be retried (terminal, non-transient).
-
-    RateLimitError (429) and InternalServerError (5xx) subclass APIStatusError but have
-    dedicated retry entries in the backoff tuple; always return False for them so the
-    backoff decorator continues retrying without interruption.
-    """
-    if not isinstance(exc, openai.APIStatusError):
-        return False
-    # Subtypes with explicit backoff entries should never be treated as terminal.
-    if isinstance(exc, (openai.RateLimitError, openai.InternalServerError)):
-        return False
-    return exc.status_code not in _TRANSIENT_HTTP_CODES
-
-
 # lists derived from https://platform.openai.com/docs/models
 chat_models = (
     "gpt-5-nano",
@@ -174,6 +152,7 @@ class OpenAICompatible(Generator):
         "suppressed_params": set(),
         "retry_json": True,
         "extra_params": {},
+        "transient_retry_codes": [408, 429, 502, 503, 504],
     }
 
     _unsafe_attributes = ["client", "generator"]
@@ -292,11 +271,9 @@ class OpenAICompatible(Generator):
             openai.InternalServerError,
             openai.APITimeoutError,
             openai.APIConnectionError,
-            openai.APIStatusError,
             garak.exception.GeneratorBackoffTrigger,
         ),
         max_value=70,
-        giveup=_is_terminal_api_error,
     )
     def _call_model(
         self, prompt: Union[Conversation, List[dict]], generations_this_call: int = 1
@@ -377,6 +354,12 @@ class OpenAICompatible(Generator):
             msg = "Bad request: " + str(repr(prompt))
             logging.exception(e)
             logging.error(msg)
+            return [None]
+        except openai.APIStatusError as e:
+            if e.status_code in self.transient_retry_codes:
+                raise garak.exception.GeneratorBackoffTrigger from e
+            msg = f"HTTP {e.status_code} from {e.request.url}: {e.message}"
+            logging.warning(msg)
             return [None]
         except json.decoder.JSONDecodeError as e:
             logging.exception(e)
