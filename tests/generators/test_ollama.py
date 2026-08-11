@@ -1,5 +1,6 @@
 import importlib
 import json
+import os
 import pytest
 import respx
 import httpx
@@ -331,3 +332,56 @@ def test_ollama_chat_honours_suppressed_params(respx_mock):
     sent = json.loads(respx_mock.calls.last.request.content)
     assert "temperature" not in sent["options"]
     assert sent["options"]["num_predict"] == gen.max_tokens
+
+
+@pytest.fixture
+def set_fake_env(request) -> None:
+    stored_env = os.getenv(OllamaGenerator.ENV_VAR, None)
+
+    def restore_env():
+        if stored_env is not None:
+            os.environ[OllamaGenerator.ENV_VAR] = stored_env
+        else:
+            try:
+                del os.environ[OllamaGenerator.ENV_VAR]
+            except KeyError:
+                pass
+
+    os.environ[OllamaGenerator.ENV_VAR] = "sk-1234567abc"
+    request.addfinalizer(restore_env)
+
+
+@pytest.mark.usefixtures("set_fake_env")
+def test_ollama_extra_params():
+    """When a user provides extra_params as well as an API Key
+    via the environment (here mocked with set_fake_env),
+    both should combine into one headers dict without overriding each other.
+    Additionally, if the user config requires to disable ssl verification,
+    this should be passed to the ollama client constructor.
+    """
+
+    config = {
+        "generators": {
+            "ollama": {
+                "OllamaGenerator": {
+                    "verify_ssl": False,
+                    "extra_params": {"headers": {"My-Header": "Test-1.0"}},
+                }
+            }
+        }
+    }
+    gen = OllamaGenerator("gemma3", config_root=config)
+
+    assert gen.api_key is not None
+    assert gen.verify_ssl is False
+    assert gen.client._client.headers["My-Header"] == "Test-1.0"
+    assert gen.client._client.headers["Authorization"] == f"Bearer {gen.api_key}"
+
+
+@pytest.mark.usefixtures("set_fake_env")
+def test_ollama_no_api_key():
+    """When no env variable key is provided the generator can be instantiated"""
+    del os.environ[OllamaGenerator.ENV_VAR]
+
+    gen = OllamaGenerator("gemma3")
+    assert gen.api_key is None
