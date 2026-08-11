@@ -226,7 +226,10 @@ def set_fake_env(request) -> None:
         if stored_env is not None:
             os.environ[OllamaGenerator.ENV_VAR] = stored_env
         else:
-            del os.environ[OllamaGenerator.ENV_VAR]
+            try:
+                del os.environ[OllamaGenerator.ENV_VAR]
+            except KeyError:
+                pass
 
     os.environ[OllamaGenerator.ENV_VAR] = "sk-1234567abc"
     request.addfinalizer(restore_env)
@@ -253,6 +256,16 @@ def test_ollama_extra_params():
     }
     gen = OllamaGenerator("gemma3", config_root=config)
 
+    assert gen.api_key is not None
     assert gen.verify_ssl is False
     assert gen.client._client.headers["My-Header"] == "Test-1.0"
-    assert gen.client._client.headers["Authorization"] == f"Bearer sk-1234567abc"
+    assert gen.client._client.headers["Authorization"] == f"Bearer {gen.api_key}"
+
+
+@pytest.mark.usefixtures("set_fake_env")
+def test_ollama_no_api_key():
+    """When no env variable key is provided the generator can be instantiated"""
+    del os.environ[OllamaGenerator.ENV_VAR]
+
+    gen = OllamaGenerator("gemma3")
+    assert gen.api_key is None
