@@ -9865,7 +9865,10 @@
         "skip_seq_start": null,
         "skip_seq_end": null,
         "timeout": 30,
-        "host": "127.0.0.1:11434"
+        "host": "127.0.0.1:11434",
+        "verify_ssl": null,
+        "extra_params": null,
+        "suppressed_params": []
       },
       "active": true,
       "extra_dependency_names": [
@@ -9882,7 +9885,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": false,
-      "mod_time": "2025-11-13 12:38:05 +0000"
+      "mod_time": "2026-08-11 17:40:05 +0000"
     },
     "generators.ollama.OllamaGeneratorChat": {
       "description": "Interface for Ollama endpoints, using the chat functionality",
@@ -9894,7 +9897,10 @@
         "skip_seq_start": null,
         "skip_seq_end": null,
         "timeout": 30,
-        "host": "127.0.0.1:11434"
+        "host": "127.0.0.1:11434",
+        "verify_ssl": null,
+        "extra_params": null,
+        "suppressed_params": []
       },
       "active": true,
       "extra_dependency_names": [
@@ -9911,7 +9917,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": false,
-      "mod_time": "2025-11-13 12:38:05 +0000"
+      "mod_time": "2026-08-11 17:40:05 +0000"
     },
     "generators.openai.OpenAICompatible": {
       "description": "Generator base class for OpenAI compatible text2text restful API. Implements shared initialization and execution methods.",
