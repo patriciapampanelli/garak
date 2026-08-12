@@ -60,7 +60,7 @@ class Detector(Configurable):
     def __init__(self, config_root=_config):
         self._load_config(config_root)
         if "name" not in dir(self):
-            self.name = __class__  # short name
+            self.name = self.__class__.__name__  # short name
         self.detectorname = str(self.__class__).split("'")[1]
         self._set_description()
         if hasattr(_config.system, "verbose") and _config.system.verbose > 0:
