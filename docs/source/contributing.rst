@@ -38,6 +38,16 @@ Coding your contribution
 This reference documentation includes a section on :doc:`extending garak <extending>`, including walkthroughs of how a custom :doc:`probe <extending.probe>` and custom :doc:`generator <extending.generator>` can be built.
 
 
+Choosing what to contribute
+---------------------------
+
+If you would like to work on your own thing, that's great. Please check project scope (above) to make sure that your work is a good fit first. Maintainers try to be easy to reach if you are in doubt - you can always open an issue.
+
+If you would like to contribute by address an open garak issue, that's also great. Please check the following points:
+#. Pick high-quality issues. If an issue has a label beginning with ``needs``, like ``needs-triage``, it's not yet ready.
+#. Pick issues designed for community engagement. These might be labelled ``good first issue``. Issues labelled ``for maintainers`` can be nuanced or rely on strategic considerations that aren't immediately available to community members. If you'd really like to do one, please comment on these before engaging in order to align expectations with maintainers.
+#. Pick confirmed bugs, labelled ``bug-verified``. If you'd like to work on an unverified ``bug``, build a test case and post it in the issue first.
+
 Checklist for contributing
 --------------------------
 
