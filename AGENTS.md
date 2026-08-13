@@ -25,11 +25,13 @@ gh pr list --repo nvidia/garak --state open --search "<short area keywords>"
 
 ### Issues to avoid
 
-If an issue description is short (e.g. three or fewer sentences), ask for clarification in the issue comments before proceeding.
+Avoid issues labelled "needs triage". If it's important to take one with this label, comment on the issue first and await response from a repository maintainer.
 
-Avoid issues labelled "preliminary" or "needs more information".
+Avoid anything labelled "for maintainers" unless explicitly directed.
 
 Avoid bug issues that have no assignment or are not labelled `bug-verified`, unless you can build a working test case confirming the bug that does not conflict with project tests.
+
+Avoid issues with other "needs" labels. If those needs appear explicitly addressed and the label may be stale, add a comment in the issue describing how the needs appear to have been met in that issue thread.
 
 ### Accountability
 
