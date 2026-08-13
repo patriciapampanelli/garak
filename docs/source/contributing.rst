@@ -42,8 +42,8 @@ Checklist for contributing
 --------------------------
 
 #. Set up a `Github <https://github.com/>`_ account, if you don't have one already. We develop in the open and the public repository is the authoritative one.
+#. Work out what you're doing. Take a look at the `garak issue list <https://github.com/NVIDIA/garak/issues>`_  and pick something not labelled "needs triage" (`quick link <https://github.com/NVIDIA/garak/issues?q=is%3Aissue%20state%3Aopen%20-label%3Aneeds-triage>`_). If the issue you'd like to work on, comment on that issue first so a maintainer can check that the issue is relevant and good enough quality to make your time worthwhile. If it's from a good first issue (`see the list <https://github.com/NVIDIA/garak/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22>`_), always drop a note on that issue so that we know you're working on it, and so that nobody else also starts working on it.
 #. Fork the ``garak`` repository - `<https://github.com/NVIDIA/garak/fork>`_
-#. Work out what you're doing. If it's from a good first issue (`see the list <https://github.com/NVIDIA/garak/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22>`_), drop a note on that issue so that we know you're working on it, and so that nobody else also starts working on it.
 #. Before you code anything: create a new branch for your work, e.g. ``git checkout -b feature/spicy_probe``
 #. Check out the rest of this page which includes links to detailed step-by-step guides to developing garak plugins
 #. Code!
