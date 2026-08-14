@@ -6315,7 +6315,7 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-07-24 15:28:01 +0000"
+      "mod_time": "2026-08-14 20:59:20 +0000"
     },
     "detectors.base.FileDetector": {
       "description": "Detector subclass for processing attempts whose outputs are filenames for checking",
@@ -6335,7 +6335,7 @@
       "pass_desc": "Detector found no issue",
       "tags": [],
       "valid_format": "local filename",
-      "mod_time": "2026-07-24 15:28:01 +0000"
+      "mod_time": "2026-08-14 20:59:20 +0000"
     },
     "detectors.base.HFDetector": {
       "description": "Detector using a Hugging Face model",
@@ -6362,7 +6362,7 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-07-24 15:28:01 +0000"
+      "mod_time": "2026-08-14 20:59:20 +0000"
     },
     "detectors.base.StringDetector": {
       "description": "Subclass of Detector using list of substrings as detection triggers",
@@ -6384,7 +6384,7 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-07-24 15:28:01 +0000"
+      "mod_time": "2026-08-14 20:59:20 +0000"
     },
     "detectors.base.TriggerListDetector": {
       "description": "Subclass of Detector using attempt's notes[triggers] as list of strings to match",
@@ -6404,7 +6404,7 @@
       },
       "pass_desc": "Detector found no issue",
       "tags": [],
-      "mod_time": "2026-07-24 15:28:01 +0000"
+      "mod_time": "2026-08-14 20:59:20 +0000"
     },
     "detectors.continuation.Continuation": {
       "description": "Detect if model intiates / continues a trigger word",
@@ -8842,7 +8842,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2026-08-11 19:05:57 +0000"
+      "mod_time": "2026-08-12 17:51:57 +0000"
     },
     "detectors.web_injection.MarkdownExfilContent": {
       "description": "As the basic detector, MarkdownExfilBasic, but did we exfiltrate anything?",
@@ -8863,7 +8863,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2026-08-11 19:05:57 +0000"
+      "mod_time": "2026-08-12 17:51:57 +0000"
     },
     "detectors.web_injection.MarkdownExfilExtendedImage": {
       "description": "Extended version of MarkdownExfilBasic that searches for a larger variety of Markdown URI formats",
@@ -8884,7 +8884,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2026-08-11 19:05:57 +0000"
+      "mod_time": "2026-08-12 17:51:57 +0000"
     },
     "detectors.web_injection.MarkdownExfilExtendedNonImage": {
       "description": "Extended version of MarkdownExfilBasic that searches for a larger variety of Markdown URI formats",
@@ -8905,7 +8905,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2026-08-11 19:05:57 +0000"
+      "mod_time": "2026-08-12 17:51:57 +0000"
     },
     "detectors.web_injection.PlaygroundMarkdownExfil": {
       "description": "As the basic detector, MarkdownExfilBasic, searching specifically for PlaygroundMarkdownExfil",
@@ -8926,7 +8926,7 @@
       "tags": [
         "avid-effect:security:S0301"
       ],
-      "mod_time": "2026-08-11 19:05:57 +0000"
+      "mod_time": "2026-08-12 17:51:57 +0000"
     },
     "detectors.web_injection.XSS": {
       "description": "Look for cross site scripting (XSS) attempts by payload.",
@@ -8950,7 +8950,7 @@
       "tags": [
         "cwe:79"
       ],
-      "mod_time": "2026-08-11 19:05:57 +0000"
+      "mod_time": "2026-08-12 17:51:57 +0000"
     }
   },
   "generators": {
