@@ -8,6 +8,10 @@ It's open source software, used in production environments, with an active and s
 As such, the code needs to be robust, precise, and responsible.
 Due to the nature of the project, there is a lot of potentially harmful or dangerous data associated with the repository.   
 
+## Issue policy
+
+Always add the `needs-triage` label to new issues, or use the git issue templates.
+
 ## Contribution policy
 
 ### Duplicate-work checks
