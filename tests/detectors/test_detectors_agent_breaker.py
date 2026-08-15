@@ -41,12 +41,14 @@ def _make_attempt(outputs, notes=None, **kwargs):
 def _mock_verify_response(success="YES", confidence=0.9, reasoning="exploited"):
     """Create a mock generator response for the VERIFY prompt."""
     resp = MagicMock()
-    resp.text = json.dumps({
-        "success": success,
-        "confidence": confidence,
-        "reasoning": reasoning,
-        "indicators": ["indicator1"],
-    })
+    resp.text = json.dumps(
+        {
+            "success": success,
+            "confidence": confidence,
+            "reasoning": reasoning,
+            "indicators": ["indicator1"],
+        }
+    )
     return resp
 
 
@@ -295,6 +297,46 @@ class TestDetectJsonParsing:
         result = detector.detect(attempt)
         assert result == [0.0]
 
+    def test_top_level_array_wrapping_object(self, detector):
+        """Judge output wrapped in a top-level array still scores."""
+        resp = MagicMock()
+        resp.text = json.dumps(
+            [
+                {
+                    "success": "YES",
+                    "confidence": 0.9,
+                    "reasoning": "ok",
+                }
+            ]
+        )
+        detector.evaluation_generator.generate.return_value = [resp]
+        attempt = _make_attempt(
+            [Message("response")],
+            notes={
+                "current_target": "t",
+                "vulnerability_info": "",
+                "current_attack_prompt": "",
+            },
+        )
+        result = detector.detect(attempt)
+        assert result == [1.0], "top-level array wrapping a verdict scores normally"
+
+    def test_empty_top_level_array_returns_zero(self, detector):
+        """A judge returning [] must degrade, not crash the run."""
+        resp = MagicMock()
+        resp.text = "[]"
+        detector.evaluation_generator.generate.return_value = [resp]
+        attempt = _make_attempt(
+            [Message("response")],
+            notes={
+                "current_target": "t",
+                "vulnerability_info": "",
+                "current_attack_prompt": "",
+            },
+        )
+        result = detector.detect(attempt)
+        assert result == [0.0], "empty top-level array degrades to a non-success score"
+
     def test_empty_generator_response(self, detector):
         detector.evaluation_generator.generate.return_value = []
         attempt = _make_attempt(
@@ -322,9 +364,7 @@ class TestDetectJsonParsing:
         assert result == [0.0]
 
     def test_generator_exception_returns_zero(self, detector):
-        detector.evaluation_generator.generate.side_effect = RuntimeError(
-            "API down"
-        )
+        detector.evaluation_generator.generate.side_effect = RuntimeError("API down")
         attempt = _make_attempt(
             [Message("response")],
             notes={
@@ -335,6 +375,22 @@ class TestDetectJsonParsing:
         )
         result = detector.detect(attempt)
         assert result == [0.0]
+
+
+class TestExtractJsonShape:
+
+    @pytest.mark.parametrize("payload", ["[]", "[1, 2]", "123", "null"])
+    def test_non_object_payloads_raise_json_decode_error(self, payload):
+        """Non-object JSON shapes must raise so callers degrade safely."""
+        with pytest.raises(json.JSONDecodeError, match="No JSON object found"):
+            AgentBreakerResult._extract_json(payload)
+
+    def test_top_level_array_unwraps_first_object(self):
+        """An object wrapped in a top-level array is extracted."""
+        parsed = AgentBreakerResult._extract_json('[{"success": "YES"}]')
+        assert parsed == {
+            "success": "YES"
+        }, "first object in a top-level array is returned"
 
 
 class TestConfidenceCutoff:
