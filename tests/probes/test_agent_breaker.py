@@ -375,6 +375,37 @@ class TestBuildToolConfigs:
         assert set(names) == {"tool_a", "tool_b"}
         assert len(names) == 2
 
+    def test_malformed_tool_analyses_list_ignored(self):
+        probe = _make_probe()
+        probe.agent_analysis = {
+            "tool_analyses": [{"name": "x"}],
+            "priority_targets": [],
+        }
+        assert probe._build_tool_configs() == []
+
+    def test_non_string_priority_targets_skipped(self):
+        probe = _make_probe()
+        probe.agent_analysis = {
+            "tool_analyses": {"tool_a": {"attack_prompts": ["a"]}},
+            "priority_targets": [None, "tool_a - vuln"],
+        }
+        configs = probe._build_tool_configs()
+        assert [name for name, _ in configs] == ["tool_a"]
+
+    def test_malformed_tools_config_ignored(self):
+        probe = _make_probe()
+        probe.agent_config = {"tools": ["rm -rf /"]}
+        assert probe._format_tools_for_analysis() == ""
+
+    def test_non_dict_tool_entry_skipped(self):
+        probe = _make_probe()
+        probe.agent_config = {
+            "tools": ["bad", {"name": "good", "description": "d"}],
+        }
+        out = probe._format_tools_for_analysis()
+        assert "### Tool: good" in out
+        assert "### Tool: bad" not in out
+
 
 # ===========================================================================
 # _attack_single_tool
