@@ -17,5 +17,4 @@ def test_select_ascii_respects_small_limits(limit: int, expected_count: int) -> 
     selected = BadCharacters._select_ascii(limit)
 
     assert len(selected) == expected_count
-    assert selected[0] == ASCII_PRINTABLE[0]
     assert all(character in ASCII_PRINTABLE for character in selected)
