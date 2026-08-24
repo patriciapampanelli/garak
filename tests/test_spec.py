@@ -316,16 +316,35 @@ def test_intent_explicit_overrides_default():
 
 
 def test_intent_default_does_not_filter_probe_set():
-    # the injected default scope (no explicit intent:) and an exclude-only spec
-    # must both leave the probe set untouched -- only explicit includes filter.
-    # probes.dan carries T009ignore; a naive filter would erase the whole family.
+    # the injected default scope (no explicit intent:) never prunes on its own.
     family = {p for p in _active("probes") if p.startswith("probes.dan.")}
     injected_default = set(resolve("probes.dan").probes)
-    exclude_only = set(resolve("probes.dan,-intent:S004").probes)
     assert (
         injected_default == family
     ), "the injected default scope must not prune probes"
-    assert exclude_only == family, "an exclude-only intent spec must not prune probes"
+
+
+def test_intent_exclude_only_ignores_unrelated_code():
+    # an exclude-only spec is a no-op when the excluded code doesn't match any
+    # selected probe's own intent -- S004 is unrelated to dan's T009ignore.
+    family = {p for p in _active("probes") if p.startswith("probes.dan.")}
+    exclude_only = set(resolve("probes.dan,-intent:S004").probes)
+    assert (
+        exclude_only == family
+    ), "an exclude-only intent spec must not prune probes it doesn't match"
+
+
+def test_intent_exclude_only_prunes_matching_probes():
+    # unlike an unrelated exclude, -intent: alone still prunes when it matches
+    # a probe's own declared intent, compared against the already-resolved
+    # candidate set -- it does not depend on the injected default scope. Every
+    # active probes.dan.* class declares T009ignore, a child of T009.
+    family = {p for p in _active("probes") if p.startswith("probes.dan.")}
+    assert family, "fixture expects at least one active probes.dan.* plugin"
+    pruned = set(resolve("probes.dan,-intent:T009").probes)
+    assert (
+        pruned == set()
+    ), "-intent:T009 must remove every dan.* probe, all of which descend from T009"
 
 
 def test_intent_descendancy_keeps_child_of_branch():
@@ -446,6 +465,14 @@ def test_intent_malformed_code_does_not_prune_candidates():
     assert (
         with_malformed == unfiltered
     ), "a malformed intent: code must not drive pruning; it stays in `rejected` instead"
+
+
+def test_intent_malformed_exclude_code_does_not_prune_candidates():
+    unfiltered = set(resolve("probes.dan", skip_unknown=True).probes)
+    with_malformed = set(resolve("probes.dan,-intent:zzz", skip_unknown=True).probes)
+    assert (
+        with_malformed == unfiltered
+    ), "a malformed -intent: code must not drive pruning either; it stays in `rejected`"
 
 
 @pytest.mark.parametrize("token", ["intent:*", "intent:all"])

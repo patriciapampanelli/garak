@@ -105,6 +105,17 @@ def _intent_keeps(name: str, includes: List[str], excludes: List[str]) -> bool:
     return _intent_under(code, includes) and not _intent_under(code, excludes)
 
 
+def _intent_excluded(name: str, excludes: List[str]) -> bool:
+    """True if ``name`` declares its own intent and it descends from an
+    excluded code. Used for exclude-only specs (no explicit ``intent:``
+    include): pruning here compares each probe's own declared intent against
+    the excludes, so it never depends on the injected default scope. An
+    ``IntentProbe`` (no declared intent) is never excluded here; which
+    intents it actually serves is decided later by IntentService."""
+    code = _plugins.plugin_info(name).get("intent")
+    return code is not None and _intent_under(code, excludes)
+
+
 def _empty_reason(spec: _spec.Spec) -> str:
     """Best-effort explanation of why a spec resolved to no probes."""
     tier_ceilings = [int(s.value) for s in spec.include if s.kind == "tier"]
@@ -133,6 +144,17 @@ def _empty_reason(spec: _spec.Spec) -> str:
             f"no selected probe carries intent '{codes}'; widen the probe "
             f"selection or drop the intent selector"
         )
+    excluded_intent_codes = [
+        s.value
+        for s in spec.exclude
+        if s.kind == "intent" and s.value.lower() not in ("*", "all")
+    ]
+    if excluded_intent_codes:
+        codes = ", ".join(excluded_intent_codes)
+        return (
+            f"every selected probe's intent falls under the excluded code(s) "
+            f"'{codes}'; narrow the exclusion or widen the probe selection"
+        )
     if any(s.kind in ("tag", "tier") for s in spec.include):
         return "no active probe matches the given tier/tag filters; widen the filters"
     return "every included probe was removed by an exclusion; adjust includes/excludes"
@@ -145,8 +167,10 @@ def resolve_spec(spec: _spec.Spec, skip_unknown: bool = False) -> _spec.Resoluti
     tags). An explicit ``intent:`` include additionally filters probes by
     typology descendancy; the injected default scope never filters, and
     ``IntentProbe`` subclasses are pruned only when their
-    ``blocked_intent_spec`` covers every included code. This is the single
-    entry point used by the CLI and harnesses.
+    ``blocked_intent_spec`` covers every included code. A lone ``-intent:``
+    (no include) also prunes: probes whose own declared intent descends from
+    an excluded code drop out of the already-resolved candidate set. This is
+    the single entry point used by the CLI and harnesses.
     """
     rejected: List[str] = []
     inactive_modules: List[str] = []
@@ -180,12 +204,15 @@ def resolve_spec(spec: _spec.Spec, skip_unknown: bool = False) -> _spec.Resoluti
         candidate = {p for p in candidate if _has_any_tag(p, tag_prefixes)}
 
     # Intent filter, mirroring the tag filter's OR-of-prefixes shape but matching
-    # by typology descendancy. Triggered only by explicit intent:
-    # includes (the injected DEFAULT_INTENT_SCOPE and exclude-only specs never
-    # prune); intent:* / intent:all are vacuous and do not filter. A probe that
-    # declares no intent (an IntentProbe, by convention) is pruned only when its
+    # by typology descendancy. An explicit intent: include filters the candidate
+    # set by descendancy (injected DEFAULT_INTENT_SCOPE never prunes);
+    # intent:* / intent:all are vacuous and do not filter. A probe that declares
+    # no intent (an IntentProbe, by convention) is pruned only when its
     # blocked_intent_spec covers every included code; otherwise which intents it
-    # actually serves is decided later by IntentService.
+    # actually serves is decided later by IntentService. A lone -intent:
+    # (no include) also prunes: any already-selected probe whose own declared
+    # intent descends from an excluded code drops out, compared against the
+    # resolved candidate set rather than the injected default scope.
     intent_includes = [s.value for s in spec.include if s.kind == "intent"]
     intent_excludes = [s.value for s in spec.exclude if s.kind == "intent"]
     # Malformed codes must not drive pruning: they stay in ``rejected`` (raised
@@ -196,9 +223,20 @@ def resolve_spec(spec: _spec.Spec, skip_unknown: bool = False) -> _spec.Resoluti
         for c in intent_includes
         if c.lower() not in ("*", "all") and _spec.validate_intent_specifier(c)
     ]
+    intent_exclude_filter = [
+        c
+        for c in intent_excludes
+        if c.lower() not in ("*", "all") and _spec.validate_intent_specifier(c)
+    ]
     if intent_filter:
         candidate = {
-            p for p in candidate if _intent_keeps(p, intent_filter, intent_excludes)
+            p
+            for p in candidate
+            if _intent_keeps(p, intent_filter, intent_exclude_filter)
+        }
+    elif intent_exclude_filter:
+        candidate = {
+            p for p in candidate if not _intent_excluded(p, intent_exclude_filter)
         }
 
     # Buffs: union of buffs.* includes (no implicit default)

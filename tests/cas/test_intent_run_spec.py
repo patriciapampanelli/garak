@@ -97,7 +97,8 @@ def test_warn_unconsumed_intents_fires_without_intent_probe(capsys):
     assert (
         "no intent-derived prompts will be generated" in out
     ), "the warning states no intent-derived prompts result without an IntentProbe"
-    # the message must not assert narrowing, which is false for exclude-only and */all specs
+    # the message must not assert narrowing, since intent:*/intent:all and some
+    # exclude-only specs never prune the probe set
     assert "narrowed" not in out, "the warning must not claim narrowing"
 
 

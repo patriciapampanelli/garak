@@ -196,6 +196,11 @@ Selectors (a category prefix is mandatory):
   ``intent:*`` or ``intent:all`` selects every intent and does not
   filter. When no ``intent:`` is given, the default scope ``S`` (the Safety
   branch) is injected at resolve time and, being the default, never prunes.
+  A lone ``-intent:<code>`` (no ``intent:`` include) also filters: it removes
+  any already-selected probe whose own declared intent descends from
+  ``<code>``, compared against the resolved candidate set rather than the
+  injected default scope; ``IntentProbe`` subclasses are unaffected, since
+  they declare no fixed intent of their own.
   Typology expansion and detectorless filtering are governed by the ``run.*``
   intent modifiers (``run.serve_detectorless_intents``). Only ``IntentProbe``
   subclasses derive prompts from intents; giving an explicit ``intent:`` with no

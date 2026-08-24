@@ -354,11 +354,11 @@ def _selection_has_intent_probe(probe_names) -> bool:
 
 def warn_unconsumed_intents(probe_names) -> None:
     """Warn once when an ``intent:`` selector was given explicitly but no
-    IntentProbe is in the selection. An explicit ``intent:`` include also narrows
-    the probe set (acting as a filter, like ``tag:``), whereas exclude-only and
-    ``intent:*``/``intent:all`` selectors do not; either way, only an IntentProbe
-    derives prompts from the intent typology, so whenever none is selected no
-    intent-derived prompts are generated."""
+    IntentProbe is in the selection. An explicit ``intent:`` include or a lone
+    ``-intent:`` exclude can each narrow the probe set (acting as a filter,
+    like ``tag:``), whereas ``intent:*``/``intent:all`` selectors do not;
+    either way, only an IntentProbe derives prompts from the intent typology,
+    so whenever none is selected no intent-derived prompts are generated."""
     from garak import _config
 
     if not getattr(_config.transient, "intents_explicit", False):
