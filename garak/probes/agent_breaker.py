@@ -336,10 +336,32 @@ class AgentBreaker(garak.probes.IterativeProbe):
         tool_analyses = self.agent_analysis.get("tool_analyses", {})
         priority_targets = self.agent_analysis.get("priority_targets", [])
 
+        if not isinstance(tool_analyses, dict):
+            logging.warning(
+                "%s # ignoring malformed tool_analyses (%s); expected a dict",
+                self.__class__.__name__,
+                type(tool_analyses).__name__,
+            )
+            tool_analyses = {}
+        if not isinstance(priority_targets, list):
+            logging.warning(
+                "%s # ignoring malformed priority_targets (%s); expected a list",
+                self.__class__.__name__,
+                type(priority_targets).__name__,
+            )
+            priority_targets = []
+
         configs: List[Tuple[str, dict]] = []
         seen: set = set()
 
         for entry in priority_targets:
+            if not isinstance(entry, str):
+                logging.warning(
+                    "%s # skipping non-string priority target: %r",
+                    self.__class__.__name__,
+                    entry,
+                )
+                continue
             target_name = entry.split(" - ")[0].strip()
             for tool_name, analysis in tool_analyses.items():
                 if (
@@ -433,8 +455,24 @@ class AgentBreaker(garak.probes.IterativeProbe):
 
     def _format_tools_for_analysis(self) -> str:
         """Format the tools from YAML config for analysis by red team model"""
+        tools = self.agent_config.get("tools", [])
+        if not isinstance(tools, list):
+            logging.warning(
+                "%s # ignoring malformed tools config (%s); expected a list",
+                self.__class__.__name__,
+                type(tools).__name__,
+            )
+            return ""
+
         tools_str = ""
-        for tool in self.agent_config.get("tools", []):
+        for tool in tools:
+            if not isinstance(tool, dict):
+                logging.warning(
+                    "%s # skipping non-dict tool entry: %r",
+                    self.__class__.__name__,
+                    tool,
+                )
+                continue
             tools_str += f"\n### Tool: {tool.get('name', 'unnamed')}\n"
             tools_str += f"Description: {tool.get('description', 'No description')}\n"
 
