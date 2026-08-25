@@ -234,12 +234,21 @@ class AgentBreakerResult(Detector):
         """Extract the first valid JSON object from *text*.
 
         Handles cases where the LLM appends an explanation after the JSON
-        block (which causes ``json.loads`` to raise "Extra data").
+        block (which causes ``json.loads`` to raise "Extra data") and where
+        the LLM wraps the object in a top-level JSON array.
         """
         try:
-            return json.loads(text)
+            parsed = json.loads(text)
         except json.JSONDecodeError:
             pass
+        else:
+            if isinstance(parsed, dict):
+                return parsed
+            if isinstance(parsed, list):
+                for item in parsed:
+                    if isinstance(item, dict):
+                        return item
+            raise json.JSONDecodeError("No JSON object found", text, 0)
 
         brace_start = text.find("{")
         if brace_start == -1:
