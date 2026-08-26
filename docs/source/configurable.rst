@@ -201,6 +201,11 @@ Selectors (a category prefix is mandatory):
   ``<code>``, compared against the resolved candidate set rather than the
   injected default scope; ``IntentProbe`` subclasses are unaffected, since
   they declare no fixed intent of their own.
+  Both directions test the same descendancy, so they are complementary set
+  operations on the candidate: ``intent:<code>`` is an intersection,
+  ``-intent:<code>`` alone is a difference. When every candidate probe already
+  descends from ``<code>``, the include is a no-op and the exclude empties
+  the selection.
   Typology expansion and detectorless filtering are governed by the ``run.*``
   intent modifiers (``run.serve_detectorless_intents``). Only ``IntentProbe``
   subclasses derive prompts from intents; giving an explicit ``intent:`` with no
