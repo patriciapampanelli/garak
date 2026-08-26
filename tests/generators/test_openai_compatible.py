@@ -6,14 +6,17 @@ import errno
 import json
 import os
 import httpx
+import openai
 import pathlib
 import respx
 import pytest
 import importlib
 import inspect
+from unittest.mock import MagicMock, patch
 
 from collections.abc import Iterable
 
+import garak.exception
 from garak.attempt import Message, Turn, Conversation
 import garak.generators.openai as openai_generator
 from garak.generators.openai import OpenAICompatible, OpenAIGenerator
@@ -251,3 +254,88 @@ def test_conversation_to_list_image_turn_uses_chat_completions_format():
     assert header == "data:image/gif;base64"
     assert separator == ","
     assert base64.b64decode(payload) == IMAGE_ASSET.read_bytes()
+
+
+# ---------------------------------------------------------------------------
+# OpenAICompatible transient-error retry tests
+# (these tests cover base-class behaviour shared by NIM and all other
+#  OpenAICompatible subclasses)
+# ---------------------------------------------------------------------------
+
+
+def _make_api_status_error(
+    status_code: int, url: str = "http://localhost/v1/chat/completions"
+) -> openai.APIStatusError:
+    """Build an openai.APIStatusError with a real httpx.Response for a given HTTP status."""
+    request = httpx.Request("POST", url)
+    response = httpx.Response(status_code, request=request)
+    return openai.APIStatusError(f"HTTP {status_code}", response=response, body=None)
+
+
+def _make_prompt() -> Conversation:
+    return Conversation([Turn(role="user", content=Message("test prompt"))])
+
+
+@pytest.fixture
+def openai_compatible_generator(monkeypatch):
+    """OpenAICompatible generator with mocked client; no real API key required."""
+    monkeypatch.setenv(OpenAIGenerator.ENV_VAR, "test-fake-key-for-unit-tests")
+    mock_client = MagicMock()
+    mock_client.chat.completions = MagicMock()
+    with patch("openai.OpenAI", return_value=mock_client):
+        g = OpenAIGenerator(name="gpt-3.5-turbo")
+    return g
+
+
+def test_transient_retry_codes_in_default_params():
+    """transient_retry_codes should be present in DEFAULT_PARAMS and contain expected codes."""
+    codes = OpenAICompatible.DEFAULT_PARAMS["transient_retry_codes"]
+    for code in (408, 429, 502, 503, 504):
+        assert code in codes, f"Expected {code} in transient_retry_codes"
+    for code in (400, 401, 403, 404):
+        assert code not in codes, f"Expected {code} NOT in transient_retry_codes"
+
+
+@pytest.mark.parametrize("code", [408, 502, 503, 504])
+def test_transient_http_error_raises_backoff_trigger(openai_compatible_generator, code):
+    """A transient status code should cause _call_model to raise GeneratorBackoffTrigger
+    so that the backoff decorator can schedule a retry."""
+    prompt = _make_prompt()
+    openai_compatible_generator.generator = MagicMock()
+    openai_compatible_generator.generator.create.side_effect = _make_api_status_error(code)
+
+    # Call the underlying function without the backoff decorator so the test does not
+    # need to wait for retry delays or exhaust the fibonacci sequence.
+    unwrapped = OpenAICompatible._call_model.__wrapped__
+    with pytest.raises(garak.exception.GeneratorBackoffTrigger):
+        unwrapped(openai_compatible_generator, prompt)
+
+
+@pytest.mark.parametrize("code", [400, 403, 404, 422])
+def test_terminal_http_error_returns_none(openai_compatible_generator, code):
+    """A terminal (non-transient) status code should cause _call_model to return [None]
+    so that the current attempt is skipped and the probe run continues."""
+    prompt = _make_prompt()
+    openai_compatible_generator.generator = MagicMock()
+    openai_compatible_generator.generator.create.side_effect = _make_api_status_error(code)
+
+    unwrapped = OpenAICompatible._call_model.__wrapped__
+    result = unwrapped(openai_compatible_generator, prompt)
+    assert result == [None], f"Expected [None] for HTTP {code}, got {result!r}"
+
+
+def test_generic_exception_message_improved(openai_compatible_generator):
+    """Non-APIStatusError exceptions should report the exception type, not the old
+    generic 'Is the model name spelled correctly?' message."""
+    from garak.exception import GarakException
+
+    prompt = _make_prompt()
+    with patch(
+        "garak.generators.openai.OpenAICompatible._call_model",
+        side_effect=RuntimeError("connection reset by peer"),
+    ):
+        with pytest.raises(GarakException) as exc_info:
+            openai_compatible_generator._call_model(prompt)
+
+    error_text = str(exc_info.value)
+    assert "Is the model name spelled correctly?" not in error_text
