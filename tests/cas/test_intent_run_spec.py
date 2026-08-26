@@ -88,8 +88,10 @@ def test_empty_axis_yields_no_prompts():
 def test_warn_unconsumed_intents_fires_without_intent_probe(capsys):
     import garak.command as command
 
+    # probes.base.Probe declares no intent of its own (unlike e.g. dan.* probes,
+    # which default to T009ignore) -- nothing here engages the intent axis at all.
     garak._config.transient.intents_explicit = True
-    command.warn_unconsumed_intents(["probes.dan.DanInTheWild"])
+    command.warn_unconsumed_intents(["probes.base.Probe"])
     out = capsys.readouterr().out
     assert (
         "no IntentProbe is selected" in out

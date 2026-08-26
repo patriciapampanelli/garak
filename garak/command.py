@@ -353,17 +353,22 @@ def _selection_has_intent_probe(probe_names) -> bool:
 
 
 def warn_unconsumed_intents(probe_names) -> None:
-    """Warn once when an ``intent:`` selector was given explicitly but no
-    IntentProbe is in the selection. An explicit ``intent:`` include or a lone
-    ``-intent:`` exclude can each narrow the probe set (acting as a filter,
-    like ``tag:``), whereas ``intent:*``/``intent:all`` selectors do not;
-    either way, only an IntentProbe derives prompts from the intent typology,
-    so whenever none is selected no intent-derived prompts are generated."""
-    from garak import _config
+    """Warn once when an ``intent:`` selector was given explicitly but neither
+    an IntentProbe nor a probe with its own declared ``intent`` is in the
+    selection. A probe with its own ``intent`` (e.g. ``dan.AutoDANCached``)
+    already consumes the axis by being selected for it, even though it
+    derives no stub-based prompts."""
+    from garak import _config, _plugins
 
     if not getattr(_config.transient, "intents_explicit", False):
         return
     if _selection_has_intent_probe(probe_names):
+        return
+    if any(
+        _plugins.plugin_info(name).get("intent") is not None
+        for name in probe_names
+        if name.startswith("probes.")
+    ):
         return
     msg = (
         "intent: selector(s) given but no IntentProbe is selected, so no "
