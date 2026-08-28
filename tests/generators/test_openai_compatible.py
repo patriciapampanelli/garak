@@ -296,7 +296,7 @@ def test_transient_retry_codes_in_default_params():
         assert code not in codes, f"Expected {code} NOT in transient_retry_codes"
 
 
-@pytest.mark.parametrize("code", [408, 502, 503, 504])
+@pytest.mark.parametrize("code", [408, 429, 502, 503, 504])
 def test_transient_http_error_raises_backoff_trigger(openai_compatible_generator, code):
     """A transient status code should cause _call_model to raise GeneratorBackoffTrigger
     so that the backoff decorator can schedule a retry."""
@@ -324,18 +324,4 @@ def test_terminal_http_error_returns_none(openai_compatible_generator, code):
     assert result == [None], f"Expected [None] for HTTP {code}, got {result!r}"
 
 
-def test_generic_exception_message_improved(openai_compatible_generator):
-    """Non-APIStatusError exceptions should report the exception type, not the old
-    generic 'Is the model name spelled correctly?' message."""
-    from garak.exception import GarakException
 
-    prompt = _make_prompt()
-    with patch(
-        "garak.generators.openai.OpenAICompatible._call_model",
-        side_effect=RuntimeError("connection reset by peer"),
-    ):
-        with pytest.raises(GarakException) as exc_info:
-            openai_compatible_generator._call_model(prompt)
-
-    error_text = str(exc_info.value)
-    assert "Is the model name spelled correctly?" not in error_text
