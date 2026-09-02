@@ -287,22 +287,32 @@ def openai_compatible_generator(monkeypatch):
     return g
 
 
-def test_transient_retry_codes_in_default_params():
-    """transient_retry_codes should be present in DEFAULT_PARAMS and contain expected codes."""
+def test_transient_retry_codes_override(openai_compatible_generator):
+    """transient_retry_codes override suppresses retry for removed code."""
     codes = OpenAICompatible.DEFAULT_PARAMS["transient_retry_codes"]
-    for code in (408, 429, 502, 503, 504):
-        assert code in codes, f"Expected {code} in transient_retry_codes"
-    for code in (400, 401, 403, 404):
-        assert code not in codes, f"Expected {code} NOT in transient_retry_codes"
+
+    prompt = _make_prompt()
+    openai_compatible_generator.generator = MagicMock()
+    openai_compatible_generator.transient_retry_codes = [codes[1:]]
+    openai_compatible_generator.generator.create.side_effect = _make_api_status_error(
+        codes[0]
+    )
+
+    results = openai_compatible_generator._call_model(prompt)
+    assert results == [None]
 
 
-@pytest.mark.parametrize("code", [408, 429, 502, 503, 504])
+@pytest.mark.parametrize(
+    "code", OpenAICompatible.DEFAULT_PARAMS["transient_retry_codes"]
+)
 def test_transient_http_error_raises_backoff_trigger(openai_compatible_generator, code):
     """A transient status code should cause _call_model to raise GeneratorBackoffTrigger
     so that the backoff decorator can schedule a retry."""
     prompt = _make_prompt()
     openai_compatible_generator.generator = MagicMock()
-    openai_compatible_generator.generator.create.side_effect = _make_api_status_error(code)
+    openai_compatible_generator.generator.create.side_effect = _make_api_status_error(
+        code
+    )
 
     # Call the underlying function without the backoff decorator so the test does not
     # need to wait for retry delays or exhaust the fibonacci sequence.
@@ -311,17 +321,25 @@ def test_transient_http_error_raises_backoff_trigger(openai_compatible_generator
         unwrapped(openai_compatible_generator, prompt)
 
 
-@pytest.mark.parametrize("code", [400, 403, 404, 422])
+@pytest.mark.parametrize(
+    "code",
+    [
+        code
+        for code in httpx.codes
+        if code >= 400
+        and code < 600
+        and code not in OpenAICompatible.DEFAULT_PARAMS["transient_retry_codes"]
+    ],
+)
 def test_terminal_http_error_returns_none(openai_compatible_generator, code):
     """A terminal (non-transient) status code should cause _call_model to return [None]
     so that the current attempt is skipped and the probe run continues."""
     prompt = _make_prompt()
     openai_compatible_generator.generator = MagicMock()
-    openai_compatible_generator.generator.create.side_effect = _make_api_status_error(code)
+    openai_compatible_generator.generator.create.side_effect = _make_api_status_error(
+        code
+    )
 
     unwrapped = OpenAICompatible._call_model.__wrapped__
     result = unwrapped(openai_compatible_generator, prompt)
     assert result == [None], f"Expected [None] for HTTP {code}, got {result!r}"
-
-
-
