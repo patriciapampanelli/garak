@@ -79,7 +79,7 @@ Translation function is configured in the ``run`` section of a configuration wit
 
 A language provider configuration is provided using the project's configurable pattern with the following keys:
 
-* ``language``   - (required) A ``,`` separated pair of ``BCP47`` entires describing translation format provided by the configuration
+* ``language``   - (required) A ``,`` separated pair of ``BCP47`` entries describing translation format provided by the configuration
 * ``model_type`` - (required) the ``langproviders`` module and optional instance class to be instantiated; ``local``, ``remote``, ``remote.DeeplTranslator`` etc.
 * ``model_name`` - (conditional) the model name loaded for translation. This field is required for ``local`` translator ``model_type``
 
