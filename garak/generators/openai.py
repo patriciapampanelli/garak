@@ -152,6 +152,7 @@ class OpenAICompatible(Generator):
         "suppressed_params": set(),
         "retry_json": True,
         "extra_params": {},
+        "transient_retry_codes": [408, 429, 502, 503, 504],
     }
 
     _unsafe_attributes = ["client", "generator"]
@@ -353,6 +354,12 @@ class OpenAICompatible(Generator):
             msg = "Bad request: " + str(repr(prompt))
             logging.exception(e)
             logging.error(msg)
+            return [None]
+        except openai.APIStatusError as e:
+            if e.status_code in self.transient_retry_codes:
+                raise garak.exception.GeneratorBackoffTrigger from e
+            msg = f"HTTP {e.status_code} from {e.request.url}: {e.message}"
+            logging.warning(msg)
             return [None]
         except json.decoder.JSONDecodeError as e:
             logging.exception(e)
