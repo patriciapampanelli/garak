@@ -5519,7 +5519,7 @@
         "demon:Rhetoric:Persuasion_and_manipulation:Escalating"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-08-29 13:10:44 +0000"
     },
     "probes.tap.TAP": {
       "description": "Tree of Attacks with Pruning Probe, generating new attacks against the target",
@@ -5567,7 +5567,7 @@
         "demon:Language:Code_and_encode:Token"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-08-29 13:10:44 +0000"
     },
     "probes.tap.TAPCached": {
       "description": "Tree of Attacks with Pruning Probe using cached attacks",
@@ -5598,7 +5598,7 @@
         "demon:Language:Code_and_encode:Token"
       ],
       "tier": 2,
-      "mod_time": "2026-05-27 20:51:42 +0000"
+      "mod_time": "2026-08-29 13:10:44 +0000"
     },
     "probes.test.Blank": {
       "description": "Blank prompt",
@@ -6120,7 +6120,7 @@
         "owasp:llm08",
         "quality:Security:AgentSecurity"
       ],
-      "mod_time": "2026-08-25 22:12:00 +0000"
+      "mod_time": "2026-08-26 11:04:53 +0000"
     },
     "detectors.always.Fail": {
       "description": "Always Fail (for testing & prototyping)",
@@ -9935,7 +9935,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": false,
-      "mod_time": "2026-08-11 17:40:05 +0000"
+      "mod_time": "2026-08-26 11:22:03 +0000"
     },
     "generators.ollama.OllamaGeneratorChat": {
       "description": "Interface for Ollama endpoints, using the chat functionality",
@@ -9967,7 +9967,7 @@
       },
       "parallel_capable": false,
       "supports_multiple_generations": false,
-      "mod_time": "2026-08-11 17:40:05 +0000"
+      "mod_time": "2026-08-26 11:22:03 +0000"
     },
     "generators.openai.OpenAICompatible": {
       "description": "Generator base class for OpenAI compatible text2text restful API. Implements shared initialization and execution methods.",
