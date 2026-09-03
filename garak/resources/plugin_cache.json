@@ -9005,6 +9005,13 @@
         "suppressed_params": [],
         "retry_json": true,
         "extra_params": {},
+        "transient_retry_codes": [
+          408,
+          429,
+          502,
+          503,
+          504
+        ],
         "target_name": null
       },
       "active": true,
@@ -9217,6 +9224,13 @@
         ],
         "retry_json": true,
         "extra_params": {},
+        "transient_retry_codes": [
+          408,
+          429,
+          502,
+          503,
+          504
+        ],
         "vary_seed_each_call": true,
         "vary_temp_each_call": true
       },
@@ -9283,6 +9297,13 @@
         "suppressed_params": [],
         "retry_json": true,
         "extra_params": {},
+        "transient_retry_codes": [
+          408,
+          429,
+          502,
+          503,
+          504
+        ],
         "config_ids": []
       },
       "active": true,
@@ -9631,6 +9652,13 @@
         ],
         "retry_json": true,
         "extra_params": {},
+        "transient_retry_codes": [
+          408,
+          429,
+          502,
+          503,
+          504
+        ],
         "vary_seed_each_call": true,
         "vary_temp_each_call": true,
         "max_input_len": 180000,
@@ -9651,7 +9679,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-06-04 18:32:23 +0000"
+      "mod_time": "2026-08-10 17:12:57 +0000"
     },
     "generators.nim.NVOpenAIChat": {
       "description": "Wrapper for NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
@@ -9679,6 +9707,13 @@
         ],
         "retry_json": true,
         "extra_params": {},
+        "transient_retry_codes": [
+          408,
+          429,
+          502,
+          503,
+          504
+        ],
         "vary_seed_each_call": true,
         "vary_temp_each_call": true
       },
@@ -9695,7 +9730,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-06-04 18:32:23 +0000"
+      "mod_time": "2026-08-10 17:12:57 +0000"
     },
     "generators.nim.NVOpenAICompletion": {
       "description": "Wrapper for NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
@@ -9723,6 +9758,13 @@
         ],
         "retry_json": true,
         "extra_params": {},
+        "transient_retry_codes": [
+          408,
+          429,
+          502,
+          503,
+          504
+        ],
         "vary_seed_each_call": true,
         "vary_temp_each_call": true
       },
@@ -9739,7 +9781,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-06-04 18:32:23 +0000"
+      "mod_time": "2026-08-10 17:12:57 +0000"
     },
     "generators.nim.Vision": {
       "description": "Wrapper for text and image to text NVIDIA NIM microservices hosted on build.nvidia.com and self-hosted.",
@@ -9767,6 +9809,13 @@
         ],
         "retry_json": true,
         "extra_params": {},
+        "transient_retry_codes": [
+          408,
+          429,
+          502,
+          503,
+          504
+        ],
         "vary_seed_each_call": true,
         "vary_temp_each_call": true,
         "max_input_len": 180000,
@@ -9786,7 +9835,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-06-04 18:32:23 +0000"
+      "mod_time": "2026-08-10 17:12:57 +0000"
     },
     "generators.nvcf.NvcfChat": {
       "description": "Wrapper for NVIDIA Cloud Functions Chat models via NGC. Expects NVCF_API_KEY environment variable.",
@@ -9940,7 +9989,14 @@
         ],
         "suppressed_params": [],
         "retry_json": true,
-        "extra_params": {}
+        "extra_params": {},
+        "transient_retry_codes": [
+          408,
+          429,
+          502,
+          503,
+          504
+        ]
       },
       "active": true,
       "extra_dependency_names": [],
@@ -9955,7 +10011,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-07-31 13:41:40 +0000"
+      "mod_time": "2026-08-10 17:12:57 +0000"
     },
     "generators.openai.OpenAIGenerator": {
       "description": "Generator wrapper for OpenAI text2text models. Expects API key in the OPENAI_API_KEY environment variable",
@@ -9976,7 +10032,14 @@
         ],
         "suppressed_params": [],
         "retry_json": true,
-        "extra_params": {}
+        "extra_params": {},
+        "transient_retry_codes": [
+          408,
+          429,
+          502,
+          503,
+          504
+        ]
       },
       "active": true,
       "extra_dependency_names": [],
@@ -9991,7 +10054,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": true,
-      "mod_time": "2026-07-31 13:41:40 +0000"
+      "mod_time": "2026-08-10 17:12:57 +0000"
     },
     "generators.openai.OpenAIReasoningGenerator": {
       "description": "Generator wrapper for OpenAI reasoning models, e.g. `o1` family.",
@@ -10032,7 +10095,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-07-31 13:41:40 +0000"
+      "mod_time": "2026-08-10 17:12:57 +0000"
     },
     "generators.rasa.RasaRestGenerator": {
       "description": "API interface for RASA models",
