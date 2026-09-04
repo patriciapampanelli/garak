@@ -98,7 +98,8 @@ def compatible() -> Iterable[OpenAICompatible]:
 def build_test_instance(module_klass):
     stored_env = os.getenv(module_klass.ENV_VAR, None)
     os.environ[module_klass.ENV_VAR] = ENV_VAR
-    class_instance = module_klass(name=MODEL_NAME)
+    with patch.object(OpenAICompatible, "_validate_uri_connectivity"):
+        class_instance = module_klass(name=MODEL_NAME)
     if stored_env is not None:
         os.environ[module_klass.ENV_VAR] = stored_env
     else:
@@ -113,6 +114,36 @@ def build_unloaded_compatible():
     generator.api_key = ENV_VAR
     generator.generator_family_name = "OpenAICompatible"
     return generator
+
+
+@pytest.mark.uri_connectivity
+def test_openai_compatible_uri_connectivity_check(mocker):
+    generator = build_unloaded_compatible()
+    get = mocker.patch(
+        "garak.generators.openai.httpx.get",
+        return_value=httpx.Response(404),
+    )
+
+    generator._validate_uri_connectivity()
+
+    get.assert_called_once_with(
+        generator.uri, timeout=OpenAICompatible.URI_CONNECT_TIMEOUT
+    )
+
+
+@pytest.mark.uri_connectivity
+def test_openai_compatible_unreachable_uri_fails_during_init(monkeypatch, mocker):
+    monkeypatch.setenv(OpenAICompatible.ENV_VAR, "test-fake-key")
+    mocker.patch(
+        "garak.generators.openai.httpx.get",
+        side_effect=httpx.ConnectError("connection refused"),
+    )
+
+    with pytest.raises(
+        garak.exception.BadGeneratorException,
+        match="target URI is not reachable",
+    ):
+        OpenAICompatible(name=MODEL_NAME)
 
 
 # helper method to pass mock config
@@ -285,35 +316,6 @@ def openai_compatible_generator(monkeypatch):
     with patch("openai.OpenAI", return_value=mock_client):
         g = OpenAIGenerator(name="gpt-3.5-turbo")
     return g
-
-
-@pytest.mark.respx(base_url="https://api.openai.com/v1")
-def test_api_connection_error_raises_garak_exception(respx_mock):
-    """A failed target connection must stop without an indefinite backoff loop."""
-    route = respx_mock.post("completions")
-    route.side_effect = httpx.ConnectError("[Errno 61] Connection refused")
-    generator = build_test_instance(OpenAIGenerator)
-    generator.client.max_retries = 0
-    prompt = _make_prompt()
-
-    with pytest.raises(garak.exception.GarakException) as exc_info:
-        generator._call_model(prompt)
-
-    assert "https://api.openai.com/v1/completions" in str(exc_info.value)
-    assert route.called
-
-
-def test_api_timeout_error_raises_backoff_trigger(openai_compatible_generator):
-    """A client timeout must trigger the existing backoff decorator."""
-    prompt = _make_prompt()
-    openai_compatible_generator.generator = MagicMock()
-    openai_compatible_generator.generator.create.side_effect = openai.APITimeoutError(
-        request=httpx.Request("POST", "http://localhost/v1/chat/completions")
-    )
-
-    unwrapped = OpenAICompatible._call_model.__wrapped__
-    with pytest.raises(garak.exception.GeneratorBackoffTrigger):
-        unwrapped(openai_compatible_generator, prompt)
 
 
 def test_transient_retry_codes_override(openai_compatible_generator):

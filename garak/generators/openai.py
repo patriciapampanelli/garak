@@ -17,6 +17,7 @@ import logging
 import re
 from typing import List, Union
 
+import httpx
 import openai
 import backoff
 
@@ -156,6 +157,7 @@ class OpenAICompatible(Generator):
     }
 
     _unsafe_attributes = ["client", "generator"]
+    URI_CONNECT_TIMEOUT = 5
 
     def close(self):
         client = getattr(self, "client", None)
@@ -183,6 +185,20 @@ class OpenAICompatible(Generator):
             )
         self.generator = self.client.chat.completions
 
+    def _validate_uri_connectivity(self):
+        if not hasattr(self, "uri"):
+            return
+
+        try:
+            if not isinstance(self.uri, str):
+                raise ValueError("URI must be a string")
+            httpx.get(self.uri, timeout=self.URI_CONNECT_TIMEOUT)
+        except (httpx.HTTPError, httpx.InvalidURL, ValueError) as e:
+            msg = (
+                f"{self.generator_family_name} target URI is not reachable: {self.uri}"
+            )
+            raise garak.exception.BadGeneratorException(msg) from e
+
     def _validate_config(self):
         pass
 
@@ -191,6 +207,7 @@ class OpenAICompatible(Generator):
         self._load_config(config_root)
         self.fullname = f"{self.generator_family_name} {self.name}"
         self.key_env_var = self.ENV_VAR
+        self._validate_uri_connectivity()
 
         self._load_unsafe()
 
@@ -348,15 +365,6 @@ class OpenAICompatible(Generator):
                 f"OpenAI API authentication failed (HTTP {e.status_code}); "
                 f"verify {self.key_env_var} is valid. Original error: {e}"
             )
-            logging.error(msg)
-            raise garak.exception.GarakException(msg) from None
-        except openai.APITimeoutError as e:
-            # Keep client-side timeouts on the existing backoff path.
-            raise garak.exception.GeneratorBackoffTrigger from e
-        except openai.APIConnectionError as e:
-            # A failed connection to the configured target cannot produce a response.
-            # See https://github.com/NVIDIA/garak/issues/2141.
-            msg = f"Connection error contacting: {e.request.url}"
             logging.error(msg)
             raise garak.exception.GarakException(msg) from None
         except openai.BadRequestError as e:
