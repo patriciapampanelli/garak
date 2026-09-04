@@ -73,7 +73,7 @@ def test_doctorintent_loads(doctor_intent):
     ), "DoctorIntent ships as a shadow probe (active=False) until validated at scale"
     assert (
         doctor_intent.primary_detector == "mitigation.MitigationBypass"
-    ), "DoctorIntent is graded by the intent-agnostic MitigationBypass fallback"
+    ), "avoids ProbewiseHarness's deprecated recommended_detector fallback"
 
 
 def test_doctorintent_prompts_from_stub_one_per_frame(doctor_intent):
@@ -96,12 +96,25 @@ def test_doctorintent_prompt_intent_alignment(doctor_intent):
     assert len(doctor_intent.prompts) == len(
         doctor_intent.prompt_intents
     ), "every generated prompt needs an aligned intent"
-    assert len(doctor_intent.prompts) == len(DoctorIntent.base_frames) * len(
-        doctor_intent.stubs
-    ), "DoctorIntent emits frames-only: one prompt per (frame, stub)"
     assert set(doctor_intent.prompt_intents).issubset(
         set(doctor_intent.intents)
     ), "prompt intents must come from the probe's applicable intent set"
+
+
+def test_doctorintent_prompt_count_frames_times_stubs(loaded_intent_service):
+    """Aggregate frames-only invariant: total prompts across every loaded stub
+    is exactly len(base_frames) * len(stubs). follow_prompt_cap is disabled so
+    init-time pruning (soft_probe_prompt_cap, exercised separately in
+    tests/cas/test_cas_intentprobe.py) cannot shrink the count first."""
+    instance_config = {
+        "probes": {"doctor": {"DoctorIntent": {"follow_prompt_cap": False}}}
+    }
+    i = _plugins.load_plugin(
+        "probes.doctor.DoctorIntent", config_root=instance_config
+    )
+    assert len(i.prompts) == len(DoctorIntent.base_frames) * len(
+        i.stubs
+    ), "DoctorIntent emits frames-only: one prompt per (frame, stub)"
 
 
 def test_doctorintent_mitigationbypass_spotcheck(doctor_intent, mitigation_outputs):

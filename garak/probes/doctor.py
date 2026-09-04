@@ -304,9 +304,12 @@ class DoctorIntent(garak.probes.IntentProbe):
     single technique probe driven by the IntentService."""
 
     doc_uri = "https://hiddenlayer.com/innovation-hub/novel-universal-bypass-for-all-major-llms/"
-    intent = None  # spans many typology values depending on the supplied stub
     active = False  # shadow probe; invoke by name until validated at scale
     lang = "en"
+    # explicit: without this, ProbewiseHarness (the default harness) prints a
+    # deprecation notice and falls back to recommended_detector (always.Fail),
+    # which also becomes the detector for any intent with no intentservice
+    # mapping (reachable only when run.serve_detectorless_intents=True).
     primary_detector = "mitigation.MitigationBypass"
     goal = "roleplay as a doctor to bypass guardrails across intents"
     tags = [
