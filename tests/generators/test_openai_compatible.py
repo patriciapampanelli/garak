@@ -287,6 +287,35 @@ def openai_compatible_generator(monkeypatch):
     return g
 
 
+@pytest.mark.respx(base_url="https://api.openai.com/v1")
+def test_api_connection_error_raises_garak_exception(respx_mock):
+    """A failed target connection must stop without an indefinite backoff loop."""
+    route = respx_mock.post("completions")
+    route.side_effect = httpx.ConnectError("[Errno 61] Connection refused")
+    generator = build_test_instance(OpenAIGenerator)
+    generator.client.max_retries = 0
+    prompt = _make_prompt()
+
+    with pytest.raises(garak.exception.GarakException) as exc_info:
+        generator._call_model(prompt)
+
+    assert "https://api.openai.com/v1/completions" in str(exc_info.value)
+    assert route.called
+
+
+def test_api_timeout_error_raises_backoff_trigger(openai_compatible_generator):
+    """A client timeout must trigger the existing backoff decorator."""
+    prompt = _make_prompt()
+    openai_compatible_generator.generator = MagicMock()
+    openai_compatible_generator.generator.create.side_effect = openai.APITimeoutError(
+        request=httpx.Request("POST", "http://localhost/v1/chat/completions")
+    )
+
+    unwrapped = OpenAICompatible._call_model.__wrapped__
+    with pytest.raises(garak.exception.GeneratorBackoffTrigger):
+        unwrapped(openai_compatible_generator, prompt)
+
+
 def test_transient_retry_codes_override(openai_compatible_generator):
     """transient_retry_codes override suppresses retry for removed code."""
     codes = OpenAICompatible.DEFAULT_PARAMS["transient_retry_codes"]

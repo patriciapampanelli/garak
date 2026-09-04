@@ -350,6 +350,15 @@ class OpenAICompatible(Generator):
             )
             logging.error(msg)
             raise garak.exception.GarakException(msg) from None
+        except openai.APITimeoutError as e:
+            # Keep client-side timeouts on the existing backoff path.
+            raise garak.exception.GeneratorBackoffTrigger from e
+        except openai.APIConnectionError as e:
+            # A failed connection to the configured target cannot produce a response.
+            # See https://github.com/NVIDIA/garak/issues/2141.
+            msg = f"Connection error contacting: {e.request.url}"
+            logging.error(msg)
+            raise garak.exception.GarakException(msg) from None
         except openai.BadRequestError as e:
             msg = "Bad request: " + str(repr(prompt))
             logging.exception(e)
