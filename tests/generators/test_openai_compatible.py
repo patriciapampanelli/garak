@@ -98,7 +98,8 @@ def compatible() -> Iterable[OpenAICompatible]:
 def build_test_instance(module_klass):
     stored_env = os.getenv(module_klass.ENV_VAR, None)
     os.environ[module_klass.ENV_VAR] = ENV_VAR
-    class_instance = module_klass(name=MODEL_NAME)
+    with patch.object(OpenAICompatible, "_validate_uri_connectivity"):
+        class_instance = module_klass(name=MODEL_NAME)
     if stored_env is not None:
         os.environ[module_klass.ENV_VAR] = stored_env
     else:
@@ -113,6 +114,36 @@ def build_unloaded_compatible():
     generator.api_key = ENV_VAR
     generator.generator_family_name = "OpenAICompatible"
     return generator
+
+
+@pytest.mark.uri_connectivity
+def test_openai_compatible_uri_connectivity_check(mocker):
+    generator = build_unloaded_compatible()
+    get = mocker.patch(
+        "garak.generators.openai.httpx.get",
+        return_value=httpx.Response(404),
+    )
+
+    generator._validate_uri_connectivity()
+
+    get.assert_called_once_with(
+        generator.uri, timeout=OpenAICompatible.URI_CONNECT_TIMEOUT
+    )
+
+
+@pytest.mark.uri_connectivity
+def test_openai_compatible_unreachable_uri_fails_during_init(monkeypatch, mocker):
+    monkeypatch.setenv(OpenAICompatible.ENV_VAR, "test-fake-key")
+    mocker.patch(
+        "garak.generators.openai.httpx.get",
+        side_effect=httpx.ConnectError("connection refused"),
+    )
+
+    with pytest.raises(
+        garak.exception.BadGeneratorException,
+        match="target URI is not reachable",
+    ):
+        OpenAICompatible(name=MODEL_NAME)
 
 
 # helper method to pass mock config
