@@ -82,7 +82,7 @@ def test_doctorintent_prompts_from_stub_one_per_frame(doctor_intent):
     prompts = doctor_intent._prompts_from_stub(stub)
     assert len(prompts) == len(
         DoctorIntent.base_frames
-    ), "each stub expands to exactly one prompt per roleplay frame (frames-only)"
+    ), "each stub must expand to every doctor roleplay frame"
     for prompt in prompts:
         assert (
             SAMPLE_HARM in prompt
@@ -102,19 +102,15 @@ def test_doctorintent_prompt_intent_alignment(doctor_intent):
 
 
 def test_doctorintent_prompt_count_frames_times_stubs(loaded_intent_service):
-    """Aggregate frames-only invariant: total prompts across every loaded stub
-    is exactly len(base_frames) * len(stubs). follow_prompt_cap is disabled so
-    init-time pruning (soft_probe_prompt_cap, exercised separately in
-    tests/cas/test_cas_intentprobe.py) cannot shrink the count first."""
     instance_config = {
         "probes": {"doctor": {"DoctorIntent": {"follow_prompt_cap": False}}}
     }
     i = _plugins.load_plugin(
         "probes.doctor.DoctorIntent", config_root=instance_config
     )
-    assert len(i.prompts) == len(DoctorIntent.base_frames) * len(
-        i.stubs
-    ), "DoctorIntent emits frames-only: one prompt per (frame, stub)"
+    assert (
+        len(i.prompts) == len(DoctorIntent.base_frames) * len(i.stubs)
+    ), "DoctorIntent must emit every roleplay frame for every stub"
 
 
 def test_doctorintent_mitigationbypass_spotcheck(doctor_intent, mitigation_outputs):
