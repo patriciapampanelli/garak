@@ -102,6 +102,22 @@ attribute (a loaded payload may override it) and propagated to all its attempts.
 An ``IntentProbe`` instead runs one technique across a range of intents chosen
 at run time.
 
+Use ``--list_probes`` with a full ``demon:`` tag to find active probes that
+implement the same technique:
+
+.. code-block:: bash
+
+    garak --list_probes --spec tag:demon:Fictionalizing:Roleplaying:User_persona
+
+Because ``tag:`` selectors use prefix matching, omit the final component to
+list the whole technique family:
+
+.. code-block:: bash
+
+    garak --list_probes --spec tag:demon:Fictionalizing:Roleplaying
+
+See :doc:`tags_taxonomies` for the available ``demon:`` tags.
+
 The CTMS typology
 -----------------
 
