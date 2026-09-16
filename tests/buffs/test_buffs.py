@@ -14,7 +14,6 @@ BUFFS = [classname for (classname, active) in _plugins.enumerate_plugins("buffs"
 
 @pytest.mark.parametrize("classname", BUFFS)
 def test_buff_structure(classname):
-
     m = importlib.import_module("garak." + ".".join(classname.split(".")[:-1]))
     c = getattr(m, classname.split(".")[-1])
 
@@ -60,8 +59,33 @@ def test_buff_load_and_transform(klassname, mocker):
             )
         buffed_a = list(b.transform(a))  # unroll the generator
         assert isinstance(buffed_a, list), "transform should return a list of attempts"
+        for buffed_attempt in buffed_a:
+            assert isinstance(buffed_attempt.prompt, attempt.Conversation), (
+                "transformed attempt prompt must be a Conversation"
+            )
+            assert buffed_attempt.lang == buffed_attempt.prompt.turns[-1].content.lang
         if mocks_model:
             assert len(buffed_a) == 3, (
                 "transform should yield the original attempt plus each unique "
                 "paraphrase, with duplicates removed"
             )
+
+
+def test_paraphrase_transform_conversation_and_lang(mocker):
+    from garak.buffs.paraphrase import Fast
+
+    b = Fast()
+    orig = attempt.Attempt()
+    orig.prompt = attempt.Message("Original text", lang="en")
+    mocker.patch.object(b, "_get_response", return_value=["Paraphrased text"])
+
+    results = list(b.transform(orig))
+    assert len(results) == 2  # original + 1 unique paraphrase
+    paraphrased = results[1]
+
+    # Verify prompt is Conversation, not raw Message
+    assert isinstance(paraphrased.prompt, attempt.Conversation)
+    # Verify lang property access does not raise AttributeError
+    assert paraphrased.lang == "en"
+    # Verify conversations history contains the paraphrased message
+    assert paraphrased.conversations[0].turns[0].content.text == "Paraphrased text"
