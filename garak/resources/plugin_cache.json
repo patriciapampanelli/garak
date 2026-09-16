@@ -10724,7 +10724,7 @@
       "doc_uri": "https://huggingface.co/humarin/chatgpt_paraphraser_on_T5_base",
       "extra_dependency_names": [],
       "lang": "en",
-      "mod_time": "2026-02-04 14:10:31 +0000"
+      "mod_time": "2026-09-16 16:21:20 +0000"
     },
     "buffs.paraphrase.PegasusT5": {
       "description": "Paraphrasing buff using Pegasus model",
@@ -10741,7 +10741,7 @@
       "doc_uri": "https://huggingface.co/tuner007/pegasus_paraphrase",
       "extra_dependency_names": [],
       "lang": "en",
-      "mod_time": "2026-02-04 14:10:31 +0000"
+      "mod_time": "2026-09-16 16:21:20 +0000"
     }
   }
 }
