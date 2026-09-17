@@ -80,6 +80,9 @@ Based on interviews with red-teamers, the research characterizes LLM red teaming
 
 .. _Summon a Demon and Bind It: https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0314658
 
+garak extends the published taxonomy with ``Direct request`` to represent an
+untransformed intent baseline in technique-intent comparisons.
+
 .. csv-filter:: Relevant Tags
     :delim: tab
     :widths: 20, 30, 50
