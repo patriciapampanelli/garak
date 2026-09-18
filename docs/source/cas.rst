@@ -116,19 +116,19 @@ Running an intent scan
 
 An ``intent:`` selector scopes which intents a selected ``IntentProbe``
 exercises. To test an intent without wrapping it in an additional attack
-technique, select the ``baseline.BaselineIntentProbe`` probe. It sends each
-intent stub to the target unchanged:
+technique, select the ``baseline.Intent`` probe. It sends each intent stub to
+the target unchanged:
 
 .. code-block:: bash
 
-    garak --target_type huggingface --target_name gpt2 --spec "probes.baseline.BaselineIntentProbe,intent:S003productkeys"
+    garak --target_type huggingface --target_name gpt2 --spec "probes.baseline.Intent,intent:S003productkeys"
 
 The baseline and an attack technique can run together over the same intent.
 The following adds the grandmother roleplay to the direct baseline:
 
 .. code-block:: bash
 
-    garak --target_type huggingface --target_name gpt2 --spec "probes.baseline.BaselineIntentProbe,probes.grandma.GrandmaIntent,intent:S003productkeys"
+    garak --target_type huggingface --target_name gpt2 --spec "probes.baseline.Intent,probes.grandma.GrandmaIntent,intent:S003productkeys"
 
 A few things to note:
 
@@ -141,7 +141,7 @@ A few things to note:
   branch) is injected at resolve time.
 
 Each intent carries a short imperative *stub* in the typology, which the probe
-expands into prompts. ``BaselineIntentProbe`` uses the stub itself as the prompt
+expands into prompts. ``baseline.Intent`` uses the stub itself as the prompt
 and maps it to garak's DEMON ``Direct_request`` extension for reporting.
 ``GrandmaIntent`` wraps it in a roleplay template, producing prompts such as:
 

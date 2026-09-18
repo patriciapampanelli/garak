@@ -275,8 +275,8 @@ If the active intent set is empty (for example the ``intent:`` axis was filtered
 to nothing), the probe is a graceful no-op: it sends no prompts and the run
 proceeds.
 
-``baseline.BaselineIntentProbe`` (:doc:`probes/baseline`) exposes the unchanged
-default transformation as a direct baseline, classified with garak's DEMON
+``baseline.Intent`` (:doc:`probes/baseline`) exposes the unchanged default
+transformation as a direct baseline, classified with garak's DEMON
 ``Direct_request`` extension for reporting.
 ``grandma.GrandmaIntent`` (:doc:`probes/grandma`) demonstrates an additional
 technique: its ``_prompts_from_stub`` expands each intent stub into many

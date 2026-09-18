@@ -12,7 +12,7 @@ the baseline appears in technique-intent reporting.
 import garak.probes
 
 
-class BaselineIntentProbe(garak.probes.IntentProbe):
+class Intent(garak.probes.IntentProbe):
     """Directly test a target against selected intent stubs.
 
     This probe sends each intent stub unchanged. It measures whether the target
