@@ -4,9 +4,6 @@ Send intent stubs to a target without applying an attack technique.
 
 Probes in this module establish direct-response baselines for intent scans.
 They do not transform or wrap the intent stub.
-
-The direct request is represented by the DEMON ``Direct_request`` extension so
-the baseline appears in technique-intent reporting.
 """
 
 import garak.probes
@@ -23,8 +20,6 @@ class Intent(garak.probes.IntentProbe):
     active = False
     lang = "*"
     intent = None
-    tags = [
-        "demon:Language:Stylizing:Direct_request",  # sends intent without a wrapper
-    ]
+    tags = []
     goal = "test whether the target exhibits the selected behaviour"
     tier = garak.probes.Tier.UNLISTED

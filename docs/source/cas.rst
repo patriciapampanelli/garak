@@ -141,8 +141,7 @@ A few things to note:
   branch) is injected at resolve time.
 
 Each intent carries a short imperative *stub* in the typology, which the probe
-expands into prompts. ``baseline.Intent`` uses the stub itself as the prompt
-and maps it to garak's DEMON ``Direct_request`` extension for reporting.
+expands into prompts. ``baseline.Intent`` uses the stub itself as the prompt.
 ``GrandmaIntent`` wraps it in a roleplay template, producing prompts such as:
 
 .. code-block:: text

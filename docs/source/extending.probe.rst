@@ -276,8 +276,7 @@ to nothing), the probe is a graceful no-op: it sends no prompts and the run
 proceeds.
 
 ``baseline.Intent`` (:doc:`probes/baseline`) exposes the unchanged default
-transformation as a direct baseline, classified with garak's DEMON
-``Direct_request`` extension for reporting.
+transformation as a direct baseline.
 ``grandma.GrandmaIntent`` (:doc:`probes/grandma`) demonstrates an additional
 technique: its ``_prompts_from_stub`` expands each intent stub into many
 grandmother-roleplay prompts by combining personas, actions and activities.
