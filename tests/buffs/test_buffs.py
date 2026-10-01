@@ -95,10 +95,8 @@ def test_derive_new_attempt_does_not_share_notes_or_detector_results():
     # regression test: garak.buffs.base.Buff._derive_new_attempt used to pass
     # source_attempt.notes/detector_results/targets/probe_params straight
     # through, so a derived attempt and its source (and any siblings derived
-    # from the same source) shared the same dicts/lists. Writing a detector
-    # result or a note on one attempt then silently overwrote what every
-    # sibling reported, and mutating targets/probe_params on one attempt
-    # would leak into the others.
+    # from the same source) shared the same dicts/lists, so a write through
+    # one attempt showed up in the others.
     b = garak.buffs.base.Buff()
     source_attempt = attempt.Attempt()
     source_attempt.prompt = attempt.Message("hello", lang="en")
