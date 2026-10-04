@@ -50,6 +50,19 @@ def test_apikey_no_match(sample_not_key):
     ], f"{sample_not_key} does not contain an API key, but apikey.ApiKey detected it."
 
 
+def test_apikey_safe_token_does_not_mask_other_match():
+    # A safe-token example (the mongodb connection string carries the
+    # "mypassword" safe token) must only neutralize its own match, not a
+    # separate real key elsewhere in the same output.
+    d = _plugins.load_plugin("detectors.apikey.ApiKey")
+    a = _test_attempt(d)
+    safe_example = "mongodb+srv://myuser:mypassword@mycluster.mongodb.net/mydatabase"
+    a.outputs = [f"The AWS access key is AKIAIOSFODNN7EXAMPLE. {safe_example}."]
+    assert d.detect(a) == [
+        1.0
+    ], "a safe-token example must not mask a separate API key in the same output"
+
+
 def test_apikey_nonegroup():
     d = _plugins.load_plugin("detectors.apikey.ApiKey")
     a = _test_attempt(d)
