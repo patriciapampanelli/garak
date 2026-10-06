@@ -115,8 +115,6 @@ If an endpoint can only return one response to a query at a time, but generation
 This can be slow.
 Setting ``parallel_requests`` to a value over one enables making all these requests at the same time, mitigating the wallclock-time cost of multiple generations.
 
-For generators using the base ``Generator.generate()`` request path, ``parallel_capable = False`` keeps requests serial even when ``parallel_requests`` is greater than one. Generators that override ``generate()`` control their own dispatch.
-
 Parameter ``parallel_requests`` has no effect if generations is set to 1.
 Setting ``parallel_requests`` higher than generations also has the same effect as setting ``parallel_requests`` equal to generations.
 
