@@ -32,8 +32,8 @@ Functions:
      #. If the underlying model supports multiple generations, return the output of ``_call_model`` invoked with the full count of generations.
      #. Otherwise, we need to assemble the outputs over multiple calls. There are two options here.
 
-        #. Is garak running with ``parallel_attempts > 1`` configured? In that case, start a multiprocessing pool with as many workers as the value of ``parallel_attempts``, and have each one of these work on building the required number of generations, in any order.
-        #. Otherwise, call ``_call_model()`` repeatedly to collect the requested number of generations.
+        #. Is garak running with ``parallel_requests > 1`` configured and does the generator set ``parallel_capable = True``? In that case, start a multiprocessing pool capped by ``parallel_requests``, ``system.max_workers``, and the number of requested generations, and have each one of these work on building the required number of generations, in any order.
+        #. Otherwise, call ``_call_model()`` repeatedly to collect the requested number of generations. A generator with ``parallel_capable = False`` stays serial even when ``parallel_requests > 1`` is configured.
 
      #. Call the ``_post_generate_hook()`` (a no-op by default)
      #. If skip sequence start and end are both defined, call ``_prune_skip_sequences()``
