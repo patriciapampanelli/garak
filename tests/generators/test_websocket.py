@@ -357,6 +357,12 @@ class TestWebSocketGenerator:
         assert gen.connection_timeout == 10
         assert gen.verify_ssl is True
 
+    def test_not_parallel_capable(self):
+        """WebSocketGenerator must run serially; parallel processes re-auth."""
+        assert WebSocketGenerator.parallel_capable is False
+        gen = WebSocketGenerator(uri="ws://localhost:3000")
+        assert gen.parallel_capable is False
+
     def test_repeated_calls_return_each_response(self):
         """Later prompts must not come back empty after the first call.
 
@@ -402,7 +408,11 @@ class TestWebSocketGenerator:
         gen = WebSocketGenerator(config_root=instance_config)
         prompts = ["hello", "world", "third"]
         texts = []
+        loops = []
         for prompt in prompts:
             out = gen.generate(Conversation([Turn("user", Message(prompt))]))
             texts.append(out[0].text if out and out[0] is not None else None)
+            loops.append(gen._loop)
         assert texts == [f"echo:{prompt}" for prompt in prompts]
+        assert all(loop is loops[0] for loop in loops)
+        assert not loops[0].is_closed()

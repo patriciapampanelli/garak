@@ -71,9 +71,9 @@ class WebSocketGenerator(Generator):
 
     ENV_VAR = "WEBSOCKET_API_KEY"
     extra_dependency_names = ["websockets"]
-    # Event loop and live socket are not picklable. Restoring them as None
-    # makes the next call open a fresh loop and reconnect.
-    _unsafe_attributes = ["websocket", "_loop"]
+    # Each process would open its own socket and re-authenticate, which some
+    # targets treat as a new session and use to invalidate the previous one.
+    parallel_capable = False
 
     def __init__(self, uri=None, config_root=_config):
         # Set uri if explicitly provided (overrides default)
@@ -97,8 +97,8 @@ class WebSocketGenerator(Generator):
         # Set up authentication
         self._setup_auth()
 
-        # Current WebSocket connection and the loop it is bound to.
-        # A connection cannot be used from a different loop, so both are reused.
+        # Current WebSocket connection and the event loop it is bound to.
+        # The connection cannot be used from another loop, so both are reused.
         self.websocket = None
         self._loop = None
 
@@ -389,11 +389,16 @@ class WebSocketGenerator(Generator):
             # Extract text from simple, single-turn conversation
             prompt_text = prompt.last_message().text
 
-            # Reuse one loop. A new loop per call closes the previous one while
-            # self.websocket stays attached to it, so later recv() calls fail
-            # and are swallowed as an empty response.
-            loop = self._event_loop()
-            response_text = loop.run_until_complete(self._generate_async(prompt_text))
+            # Reuse one event loop for the life of the generator. self.websocket
+            # is bound to the loop it was opened on; closing that loop after each
+            # call made later send/recv fail. The loop is closed in __del__.
+            if self._loop is None or self._loop.is_closed():
+                self.websocket = None
+                self._loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(self._loop)
+            response_text = self._loop.run_until_complete(
+                self._generate_async(prompt_text)
+            )
             # Create Message objects for garak
             if response_text:
                 message = Message(text=response_text)
@@ -411,37 +416,23 @@ class WebSocketGenerator(Generator):
             logger.error(f"Unexpected error in WebSocket generation: {e}")
             return [Message(text="")]
 
-    def _event_loop(self) -> asyncio.AbstractEventLoop:
-        """Return the loop this generator's socket is bound to.
-
-        Creating a new loop per call closes the previous one and leaves
-        ``self.websocket`` attached to a dead loop.
-        """
+    def __del__(self):
+        """Close the WebSocket connection and the event loop it is bound to."""
         loop = getattr(self, "_loop", None)
         if loop is None or loop.is_closed():
-            self.websocket = None
-            loop = asyncio.new_event_loop()
-            self._loop = loop
-        asyncio.set_event_loop(loop)
-        return loop
-
-    def __del__(self):
-        """Clean up WebSocket connection on the loop it was opened with."""
-        websocket = getattr(self, "websocket", None)
-        if not websocket:
             return
         try:
-            loop = getattr(self, "_loop", None)
-            if loop is None or loop.is_closed():
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
-            else:
-                asyncio.set_event_loop(loop)
-            loop.run_until_complete(websocket.close())
-            if not loop.is_closed():
-                loop.close()
+            websocket = getattr(self, "websocket", None)
+            if websocket is not None:
+                loop.run_until_complete(websocket.close())
         except Exception as e:
             logger.warning("websocket teardown error", exc_info=e)
+        finally:
+            try:
+                if not loop.is_closed():
+                    loop.close()
+            except Exception:
+                pass
 
 
 DEFAULT_CLASS = "WebSocketGenerator"
