@@ -9196,7 +9196,7 @@
       },
       "parallel_capable": true,
       "supports_multiple_generations": false,
-      "mod_time": "2026-03-28 17:25:32 +0000"
+      "mod_time": "2026-10-06 18:16:38 +0000"
     },
     "generators.bedrock.BedrockGenerator": {
       "description": "Interface for AWS Bedrock foundation models using Converse API.",
@@ -10631,9 +10631,9 @@
           "text"
         ]
       },
-      "parallel_capable": true,
+      "parallel_capable": false,
       "supports_multiple_generations": false,
-      "mod_time": "2026-02-19 18:44:19 +0000"
+      "mod_time": "2026-10-06 02:37:42 +0000"
     }
   },
   "harnesses": {
@@ -10671,7 +10671,7 @@
       "doc_uri": "",
       "extra_dependency_names": [],
       "lang": null,
-      "mod_time": "2026-02-04 19:19:46 +0000"
+      "mod_time": "2026-09-16 13:45:48 +0000"
     },
     "buffs.encoding.Base64": {
       "description": "Base64 buff",
