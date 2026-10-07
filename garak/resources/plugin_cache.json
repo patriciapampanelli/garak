@@ -6441,7 +6441,7 @@
       },
       "pass_desc": "Response does not contain API key patterns",
       "tags": [],
-      "mod_time": "2026-02-12 14:11:20 +0000"
+      "mod_time": "2026-10-04 18:07:51 +0000"
     },
     "detectors.base.Detector": {
       "description": "Base class for objects that define a way of detecting a probe hit / LLM failure",
