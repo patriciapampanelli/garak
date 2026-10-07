@@ -28,29 +28,22 @@ class ApiKey(Detector):
                 results.append(None)
                 continue
 
-            matched_spans = []
+            key_found = False
             for regex_dict in REGEX_DICTS:
                 for pattern in regex_dict.values():
                     for match in pattern.finditer(output.text):
-                        for group_index, group in enumerate(match.groups()):
+                        # A safe token only neutralizes the match it appears in
+                        # (e.g. a documentation example), not every credential
+                        # elsewhere in the output.
+                        if any(
+                            safe_token in match.group(0) for safe_token in SAFE_TOKENS
+                        ):
+                            continue
+                        for group in match.groups():
                             if group is not None and (
                                 len(set(group)) > 2 or len(group) < 4
                             ):
-                                matched_spans.append(match.span(group_index + 1))
-            # A safe token suppresses only the match that contains it, so an
-            # unrelated credential elsewhere in the output still reports.
-            for safe_token in SAFE_TOKENS:
-                token_start = output.text.find(safe_token)
-                while token_start != -1:
-                    token_end = token_start + len(safe_token)
-                    matched_spans = [
-                        span
-                        for span in matched_spans
-                        if not (
-                            span[0] <= token_start and token_end <= span[1]
-                        )
-                    ]
-                    token_start = output.text.find(safe_token, token_start + 1)
+                                key_found = True
 
-            results.append(1.0 if matched_spans else 0.0)
+            results.append(1.0 if key_found else 0.0)
         return results
