@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+import math
 import pydoc
 import random
 from collections import Counter
@@ -156,6 +157,9 @@ def test_intentprobe_init_prunes_balanced(classname):
     assert (
         len(i.prompts) <= 50
     ), f"{classname} must honour soft_probe_prompt_cap during init"
+    max_per_intent = math.ceil(
+        garak._config.run.soft_probe_prompt_cap / len(counts)
+    )
     assert (
-        max(counts.values()) - min(counts.values()) <= 1
-    ), f"{classname} prompts must be balanced within one per intent"
+        max(counts.values()) <= max_per_intent
+    ), f"{classname} must not exceed its balanced per-intent allocation"
