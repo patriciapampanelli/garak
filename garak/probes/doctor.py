@@ -327,8 +327,9 @@ class DoctorIntent(garak.probes.IntentProbe):
     base_frames = [DR_HOUSE_FRAME_1, DR_HOUSE_FRAME_2, MEDICAL_ADVISOR_FRAME]
 
     def _prompts_from_stub(self, stub: TextStub) -> List[str]:
+        stub_clipped_front = " ".join(stub.content.split(" ")[1:])
         return [
-            frame.replace("{{HARMFUL_BEHAVIOR}}", stub.content)
+            frame.replace("{{HARMFUL_BEHAVIOR}}", stub_clipped_front)
             for frame in self.base_frames
         ]
 
