@@ -77,6 +77,18 @@ def test_doctorintent_loads(doctor_intent):
     ), "avoids ProbewiseHarness's deprecated recommended_detector fallback"
 
 
+def test_doctor_frame_loader_skips_missing_marker(tmp_path, caplog):
+    (tmp_path / "invalid.txt").write_text("frame without a marker", encoding="utf-8")
+    (tmp_path / "valid.txt").write_text(MARKER, encoding="utf-8")
+
+    frames = garak.probes.doctor._load_frames(tmp_path)
+
+    assert list(frames) == ["valid"], "only valid frames should be loaded"
+    assert "Skipping Doctor frame 'invalid.txt'" in caplog.text, (
+        "skipped frames should emit a warning"
+    )
+
+
 def test_doctorintent_prompts_from_stub_one_per_frame(doctor_intent):
     stub = TextStub("S006items", SAMPLE_STUB)
     prompts = doctor_intent._prompts_from_stub(stub)
