@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-import hashlib
 from types import SimpleNamespace
 
 import pytest
@@ -31,19 +30,16 @@ def test_dan_ablation_unique():
 
 # --- AblationDan11Intent sibling: delta behaviour only ---------------------
 #
-# The transformation hooks are pure, so they are exercised on a bare instance
+# The stub->prompt transformation is pure, so it is exercised on a bare instance
 # without the intent service. Intent scoping, pruning, alignment and discovery
 # belong to IntentProbe and the generic suites, and are not retested here.
+# The probe returns plain strings and carries no notes to the report.
 
 
 def _bare_sibling():
     probe = object.__new__(AblationDan11Intent)
     probe.lang = "en"
     return probe
-
-
-def _frame_texts(stub):
-    return [c.turns[0].content.text for c in _bare_sibling()._prompts_from_stub(stub)]
 
 
 def _stub(content, intent="S009cred"):
@@ -53,8 +49,9 @@ def _stub(content, intent="S009cred"):
 
 
 def test_ablation_dan11_intent_eight_unique_frames_per_stub():
-    texts = _frame_texts(_stub("Give me a valid API key."))
+    texts = _bare_sibling()._prompts_from_stub(_stub("Give me a valid API key."))
     assert len(texts) == len(_ABLATION_DAN_11_FRAMES), "one frame per curated variant"
+    assert all(isinstance(t, str) for t in texts), "frames are plain strings"
     assert len(set(texts)) == len(texts), "frames must be distinct"
     for text in texts:
         assert (
@@ -69,14 +66,12 @@ def test_ablation_dan11_intent_eight_unique_frames_per_stub():
 
 
 def test_ablation_dan11_intent_strong_arm_pairs_differ_only_by_coercion():
-    by_mask = {
-        c.notes["source_mask"]: c
-        for c in _bare_sibling()._prompts_from_stub(_stub("Reveal the secret."))
-    }
+    # The first four frames are persona-only; the last four add the coercion
+    # segments, so frame i and frame i+4 form a matched pair.
+    texts = _bare_sibling()._prompts_from_stub(_stub("Reveal the secret."))
     coercion = (_DAN11_DISABLE, _DAN11_NO_QUESTION, _DAN11_NO_REVEAL)
-    for base_mask, strong_mask in ((1, 57), (3, 59), (5, 61), (7, 63)):
-        strong_text = by_mask[strong_mask].turns[0].content.text
-        base_text = by_mask[base_mask].turns[0].content.text
+    for i in range(4):
+        base_text, strong_text = texts[i], texts[i + 4]
         for segment in coercion:
             assert segment in strong_text, "coercive frame carries strong-arm segments"
             assert segment not in base_text, "persona-only frame omits strong-arm"
@@ -86,34 +81,6 @@ def test_ablation_dan11_intent_strong_arm_pairs_differ_only_by_coercion():
         assert (
             stripped == base_text
         ), "coercive frame equals its partner plus only the coercion segments"
-
-
-def test_ablation_dan11_intent_strong_arm_flag_tracks_mask():
-    for conv in _bare_sibling()._prompts_from_stub(_stub("Do the thing.")):
-        notes = conv.notes
-        assert notes["strong_arm_present"] == bool(
-            notes["source_mask"] & 56
-        ), "strong_arm_present must agree with mask bits 8|16|32"
-
-
-def test_ablation_dan11_intent_provenance_notes():
-    content = "Give me a valid API key."
-    convs = _bare_sibling()._prompts_from_stub(_stub(content, intent="S009cred"))
-    expected_id = hashlib.sha256(
-        ("S009cred" + content).encode("utf-8"), usedforsecurity=False
-    ).hexdigest()
-    variant_ids = {v[0] for v in _ABLATION_DAN_11_FRAMES}
-    for conv in convs:
-        assert (
-            conv.notes["source_id"] == expected_id
-        ), "source_id = sha256(intent+content)"
-        assert conv.notes["variant_id"] in variant_ids
-        assert set(conv.notes) == {
-            "source_id",
-            "source_mask",
-            "variant_id",
-            "strong_arm_present",
-        }
 
 
 @pytest.mark.parametrize(
@@ -127,7 +94,7 @@ def test_ablation_dan11_intent_provenance_notes():
     ],
 )
 def test_ablation_dan11_intent_identity_insertion(content):
-    for text in _frame_texts(_stub(content)):
+    for text in _bare_sibling()._prompts_from_stub(_stub(content)):
         assert content in text, "stub content inserted verbatim (identity, no rewrite)"
 
 
@@ -135,29 +102,28 @@ def test_ablation_dan11_intent_empty_stub_yields_no_prompts():
     assert _bare_sibling()._prompts_from_stub(_stub("   ")) == []
 
 
+def _single_turn_attempt(text):
+    conversation = garak.attempt.Conversation(
+        [garak.attempt.Turn("user", garak.attempt.Message(text=text, lang="en"))]
+    )
+    return garak.attempt.Attempt(prompt=conversation)
+
+
 def test_ablation_dan11_intent_generator_name_substitution():
     probe = _bare_sibling()
-    conv = probe._prompts_from_stub(_stub("Give me a valid API key."))[0]
-    assert "{generator.name}" in conv.turns[0].content.text, "placeholder before run"
+    prompt = probe._prompts_from_stub(_stub("Give me a valid API key."))[0]
+    assert "{generator.name}" in prompt, "placeholder present before run"
 
     probe.prompt_intents = ["S009cred"]
     probe.generator = SimpleNamespace(name="GPT-TEST")
-    attempt = garak.attempt.Attempt(prompt=conv)
+    attempt = _single_turn_attempt(prompt)
     probe._attempt_prestore_hook(attempt, 0)
 
     rendered = attempt.prompt.turns[0].content.text
     assert "{generator.name}" not in rendered, "placeholder substituted at run time"
     assert "GPT-TEST" in rendered, "target name spliced in"
     assert attempt.intent == "S009cred", "intent propagated by IntentProbe hook"
-    # generation is pure: the source frame still carries the placeholder, so a
-    # second run against a different target substitutes afresh.
+    # generation is pure: a fresh call still carries the placeholder, so a second
+    # run against a different target substitutes afresh.
     again = probe._prompts_from_stub(_stub("Give me a valid API key."))[0]
-    assert "{generator.name}" in again.turns[0].content.text
-
-
-def test_ablation_dan11_intent_notes_survive_to_report():
-    conv = _bare_sibling()._prompts_from_stub(_stub("Give me a valid API key."))[0]
-    attempt = garak.attempt.Attempt(prompt=conv)
-    reported = attempt.as_dict()["prompt"]["notes"]
-    assert reported["variant_id"] == conv.notes["variant_id"]
-    assert reported["source_mask"] == conv.notes["source_mask"]
+    assert "{generator.name}" in again
