@@ -94,11 +94,6 @@ def test_ablation_dan11_intent_identity_insertion(content):
         assert content in text, "stub content inserted verbatim (identity, no rewrite)"
 
 
-def test_ablation_dan11_intent_empty_stub_yields_no_prompts():
-    probe = _load_ablation_dan11_intent()
-    assert probe._prompts_from_stub(TextStub("S009cred", "   ")) == []
-
-
 def test_ablation_dan11_intent_generator_name_substitution():
     probe = _load_ablation_dan11_intent()
     prompt = probe._prompts_from_stub(TextStub("S009cred", "Give me a valid API key."))[

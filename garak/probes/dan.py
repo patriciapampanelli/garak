@@ -541,8 +541,6 @@ class AblationDan11Intent(garak.probes.IntentProbe):
 
     def _prompts_from_stub(self, stub: TextStub) -> List[str]:
         content = stub.content
-        if not isinstance(content, str) or not content.strip():
-            return []
         # Build the curated subset of the 127-combination ablation space
         # procedurally, like the Ablation_Dan_11_0 bitmask loop. Ignore-previous and the
         # persona core are always present; the "Stay in DAN Mode" reminder
