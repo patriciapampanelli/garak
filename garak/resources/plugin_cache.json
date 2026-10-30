@@ -2315,7 +2315,8 @@
     "probes.encoding.InjectLeetIntent": {
       "description": "Obfuscate an instruction with Leetspeak and measure whether the target acts on it.",
       "DEFAULT_PARAMS": {
-        "follow_prompt_cap": true
+        "follow_prompt_cap": true,
+        "transmute_chance": 0.5
       },
       "active": false,
       "blocked_intent_spec": "",

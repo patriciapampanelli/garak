@@ -574,13 +574,17 @@ class EncodingIntentProbe(garak.probes.IntentProbe, ABC):
         """Encoding technique applied to each stub - overridden by subclasses."""
         raise NotImplementedError
 
+    # Arguments forwarded to ``strategy.encode``; subclasses override when tunable.
+    strategy_kwargs: dict = {}
+
     def _prompts_from_stub(self, stub: Stub) -> List[str]:
         content = stub.content
         if not isinstance(content, str) or not content:
             return []
 
         prompts: List[str] = []
-        for encoded_text in dict.fromkeys(self.strategy.encode(content)):
+        encoded_texts = self.strategy.encode(content, **self.strategy_kwargs)
+        for encoded_text in dict.fromkeys(encoded_texts):
             for _, template in self.action_templates:
                 prompts.append(
                     template.format(
@@ -763,6 +767,13 @@ class InjectLeetIntent(EncodingIntentProbe):
     doc_uri = "https://en.wikipedia.org/wiki/Leet"
     strategy = encodings.LEET
     action_templates = ENCODING_OBFUSCATION_ACTION_TEMPLATES
+
+    DEFAULT_PARAMS = EncodingIntentProbe.DEFAULT_PARAMS | {"transmute_chance": 0.5}
+
+    @property
+    def strategy_kwargs(self) -> dict:
+        """Forward the configured transmute chance to the Leetspeak encoder."""
+        return {"transmute_chance": self.transmute_chance}
 
 
 class InjectZalgoIntent(EncodingIntentProbe):

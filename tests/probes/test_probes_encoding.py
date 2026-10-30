@@ -160,12 +160,12 @@ CLEAR_SIBLINGS = {QP_INTENT}
 OBFUSCATION_SIBLINGS = {LEET_INTENT, ZALGO_INTENT}
 
 
-def _load_intent_probe(plugin_name, intent_spec):
+def _load_intent_probe(plugin_name, intent_spec, config_root=_config):
     _config.load_config()
     _config.transient.intent_spec = intent_spec
     _config.run.serve_detectorless_intents = False
     garak.services.intentservice.load()
-    return _plugins.load_plugin(plugin_name)
+    return _plugins.load_plugin(plugin_name, config_root=config_root)
 
 
 def test_strategy_base16_encodes_to_known_hex():
@@ -356,3 +356,24 @@ def test_lossy_sibling_keeps_prompt_intent_alignment():
     # their source intents stay index-aligned after build
     probe = _load_intent_probe(NATO_INTENT, "S")
     assert len(probe.prompts) == len(probe.prompt_intents)
+
+
+def _leet_intent_config(transmute_chance):
+    return {
+        "probes": {
+            "encoding": {"InjectLeetIntent": {"transmute_chance": transmute_chance}}
+        }
+    }
+
+
+@pytest.mark.parametrize(
+    "transmute_chance, encoded",
+    [(1.0, "134057"), (0.0, "ieaost")],
+)
+def test_leet_intent_honours_configured_transmute_chance(transmute_chance, encoded):
+    # bounds are deterministic: always-swap maps every char, never-swap is a no-op
+    probe = _load_intent_probe(
+        LEET_INTENT, "S009cred", config_root=_leet_intent_config(transmute_chance)
+    )
+    prompts = probe._prompts_from_stub(TextStub("S009cred", "ieaost"))
+    assert encoded in prompts[0], "configured transmute_chance must reach the encoder"

@@ -24,14 +24,18 @@ class EncodingStrategy:
     encoders: Tuple[Callable, ...]
     use_bytes: bool = True
 
-    def encode(self, text: str) -> List[str]:
-        """Return one encoded string per encoder, in declaration order."""
+    def encode(self, text: str, **encoder_kwargs) -> List[str]:
+        """Return one encoded string per encoder, in declaration order.
+
+        Keyword arguments are forwarded to each encoder, letting a probe tune a
+        strategy per call without the strategy holding any state.
+        """
         encoded_texts: List[str] = []
         for encoder in self.encoders:
             if self.use_bytes:
-                encoded_text = encoder(bytes(text, "utf-8"))
+                encoded_text = encoder(bytes(text, "utf-8"), **encoder_kwargs)
             else:
-                encoded_text = encoder(text)
+                encoded_text = encoder(text, **encoder_kwargs)
             if isinstance(encoded_text, bytes):
                 encoded_text = encoded_text.decode()
             encoded_texts.append(encoded_text)
@@ -92,7 +96,7 @@ ATBASH = EncodingStrategy(name="Atbash", encoders=(atbash,))
 UU = EncodingStrategy(name="UUencode", encoders=(uuencode,))
 
 
-def leetspeak(input: str, transmute_chance: float = 0.6) -> str:
+def leetspeak(input: str, transmute_chance: float = 0.5) -> str:
     src_chars = "ieaost"
     dst_chars = "134057"
     processed = input.translate(
@@ -100,7 +104,10 @@ def leetspeak(input: str, transmute_chance: float = 0.6) -> str:
     )
     # mix it up
     output = "".join(
-        [processed[i] if random.random() > 0.5 else input[i] for i in range(len(input))]
+        [
+            processed[i] if random.random() < transmute_chance else input[i]
+            for i in range(len(input))
+        ]
     )
     return output
 
@@ -274,8 +281,10 @@ def nato(text: bytes) -> bytes:
     return bytes(" ".join(output), "utf-8")
 
 
-def leet_bytes(payload: bytes) -> bytes:
-    return bytes(leetspeak(payload.decode()), "utf-8")
+def leet_bytes(payload: bytes, transmute_chance: float = 0.5) -> bytes:
+    return bytes(
+        leetspeak(payload.decode(), transmute_chance=transmute_chance), "utf-8"
+    )
 
 
 def base2048_encode(payload: bytes) -> str:
