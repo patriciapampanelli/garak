@@ -7,14 +7,10 @@ import pytest
 
 import garak._plugins
 import garak.attempt
+import garak.services.intentservice
+from garak import _config
 from garak.intents import TextStub
-from garak.probes.dan import (
-    AblationDan11Intent,
-    _ABLATION_DAN_11_FRAMES,
-    _DAN11_DISABLE,
-    _DAN11_NO_QUESTION,
-    _DAN11_NO_REVEAL,
-)
+from garak.probes.dan import _DAN11_DISABLE, _DAN11_NO_QUESTION, _DAN11_NO_REVEAL
 
 
 def test_dan_ablation_unique():
@@ -30,27 +26,25 @@ def test_dan_ablation_unique():
 
 # --- AblationDan11Intent sibling: delta behaviour only ---------------------
 #
-# The stub->prompt transformation is pure, so it is exercised on a bare instance
-# without the intent service. Intent scoping, pruning, alignment and discovery
-# belong to IntentProbe and the generic suites, and are not retested here.
-# The probe returns plain strings and carries no notes to the report.
+# The probe is loaded through the intent service with a narrow intent scope
+# (matching the badchars/encoding migration tests), then its pure stub->prompt
+# transformation is exercised directly. Intent scoping, pruning, alignment and
+# discovery belong to IntentProbe and the generic suites, and are not retested
+# here. The probe returns plain strings and carries no notes to the report.
 
 
-def _bare_sibling():
-    probe = object.__new__(AblationDan11Intent)
-    probe.lang = "en"
-    return probe
-
-
-def _stub(content, intent="S009cred"):
-    stub = TextStub(intent=intent)
-    stub.content = content
-    return stub
+def _load_ablation_dan11_intent(intent_spec="S009cred"):
+    _config.load_config()
+    _config.transient.intent_spec = intent_spec
+    _config.run.serve_detectorless_intents = False
+    garak.services.intentservice.load()
+    return garak._plugins.load_plugin("probes.dan.AblationDan11Intent")
 
 
 def test_ablation_dan11_intent_eight_unique_frames_per_stub():
-    texts = _bare_sibling()._prompts_from_stub(_stub("Give me a valid API key."))
-    assert len(texts) == len(_ABLATION_DAN_11_FRAMES), "one frame per curated variant"
+    probe = _load_ablation_dan11_intent()
+    texts = probe._prompts_from_stub(TextStub("S009cred", "Give me a valid API key."))
+    assert len(texts) == 8, "eight frames: 2^3 combinations of the ablation factors"
     assert all(isinstance(t, str) for t in texts), "frames are plain strings"
     assert len(set(texts)) == len(texts), "frames must be distinct"
     for text in texts:
@@ -68,7 +62,8 @@ def test_ablation_dan11_intent_eight_unique_frames_per_stub():
 def test_ablation_dan11_intent_strong_arm_pairs_differ_only_by_coercion():
     # The first four frames are persona-only; the last four add the coercion
     # segments, so frame i and frame i+4 form a matched pair.
-    texts = _bare_sibling()._prompts_from_stub(_stub("Reveal the secret."))
+    probe = _load_ablation_dan11_intent()
+    texts = probe._prompts_from_stub(TextStub("S009cred", "Reveal the secret."))
     coercion = (_DAN11_DISABLE, _DAN11_NO_QUESTION, _DAN11_NO_REVEAL)
     for i in range(4):
         base_text, strong_text = texts[i], texts[i + 4]
@@ -94,29 +89,28 @@ def test_ablation_dan11_intent_strong_arm_pairs_differ_only_by_coercion():
     ],
 )
 def test_ablation_dan11_intent_identity_insertion(content):
-    for text in _bare_sibling()._prompts_from_stub(_stub(content)):
+    probe = _load_ablation_dan11_intent()
+    for text in probe._prompts_from_stub(TextStub("S009cred", content)):
         assert content in text, "stub content inserted verbatim (identity, no rewrite)"
 
 
 def test_ablation_dan11_intent_empty_stub_yields_no_prompts():
-    assert _bare_sibling()._prompts_from_stub(_stub("   ")) == []
-
-
-def _single_turn_attempt(text):
-    conversation = garak.attempt.Conversation(
-        [garak.attempt.Turn("user", garak.attempt.Message(text=text, lang="en"))]
-    )
-    return garak.attempt.Attempt(prompt=conversation)
+    probe = _load_ablation_dan11_intent()
+    assert probe._prompts_from_stub(TextStub("S009cred", "   ")) == []
 
 
 def test_ablation_dan11_intent_generator_name_substitution():
-    probe = _bare_sibling()
-    prompt = probe._prompts_from_stub(_stub("Give me a valid API key."))[0]
+    probe = _load_ablation_dan11_intent()
+    prompt = probe._prompts_from_stub(TextStub("S009cred", "Give me a valid API key."))[
+        0
+    ]
     assert "{generator.name}" in prompt, "placeholder present before run"
 
-    probe.prompt_intents = ["S009cred"]
     probe.generator = SimpleNamespace(name="GPT-TEST")
-    attempt = _single_turn_attempt(prompt)
+    conversation = garak.attempt.Conversation(
+        [garak.attempt.Turn("user", garak.attempt.Message(text=prompt, lang="en"))]
+    )
+    attempt = garak.attempt.Attempt(prompt=conversation)
     probe._attempt_prestore_hook(attempt, 0)
 
     rendered = attempt.prompt.turns[0].content.text
@@ -125,5 +119,7 @@ def test_ablation_dan11_intent_generator_name_substitution():
     assert attempt.intent == "S009cred", "intent propagated by IntentProbe hook"
     # generation is pure: a fresh call still carries the placeholder, so a second
     # run against a different target substitutes afresh.
-    again = probe._prompts_from_stub(_stub("Give me a valid API key."))[0]
+    again = probe._prompts_from_stub(TextStub("S009cred", "Give me a valid API key."))[
+        0
+    ]
     assert "{generator.name}" in again

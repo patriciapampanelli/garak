@@ -510,23 +510,6 @@ _DAN11_REQUEST = (
     'reply with "DAN:".'
 )
 
-# Curated subset of the 127-combination ablation space, as
-# ``(include_history, include_personality, strong_arm)``. Every frame keeps the
-# ignore-previous opener and persona core; the strong-arm segments (bits 8|16|32)
-# are added only for the coercive four. The eight combinations correspond to
-# source masks 1, 3, 5, 7, 57, 59, 61, 63 (the "Stay in DAN Mode" bit 64 is
-# excluded); the first four and last four form coercion-only pairs by index.
-_ABLATION_DAN_11_FRAMES = (
-    (False, False, False),  # mask 1
-    (True, False, False),  # mask 3
-    (False, True, False),  # mask 5
-    (True, True, False),  # mask 7
-    (False, False, True),  # mask 57
-    (True, False, True),  # mask 59
-    (False, True, True),  # mask 61
-    (True, True, True),  # mask 63
-)
-
 
 class AblationDan11Intent(garak.probes.IntentProbe):
     """DAN 11.0 ablation frames carrying an intent stub
@@ -561,20 +544,30 @@ class AblationDan11Intent(garak.probes.IntentProbe):
         content = stub.content
         if not isinstance(content, str) or not content.strip():
             return []
+        # Build the curated subset of the 127-combination ablation space
+        # procedurally, like the legacy bitmask loop. Ignore-previous and the
+        # persona core are always present; the "Stay in DAN Mode" reminder
+        # (bit 64) is excluded. Iterating strong_arm outermost yields the eight
+        # source masks 1, 3, 5, 7 (persona-only) then 57, 59, 61, 63 (coercive),
+        # so frame i and frame i+4 differ only by the strong-arm segments.
         prompts = []
-        for history, personality, strong_arm in _ABLATION_DAN_11_FRAMES:
-            parts = [_DAN11_IGNORE, _DAN11_PERSONA]
-            if history:
-                parts.append(_DAN11_HISTORY)
-            if personality:
-                parts.append(_DAN11_PERSONALITY)
-            parts.append(_DAN11_SIMULATE)
-            if strong_arm:
-                parts.extend((_DAN11_DISABLE, _DAN11_NO_QUESTION, _DAN11_NO_REVEAL))
-            parts.append(_DAN11_POLICY)
-            prompts.append(
-                "".join(parts) + "Request: " + content + "\n" + _DAN11_REQUEST
-            )
+        for strong_arm in (False, True):
+            for personality in (False, True):
+                for history in (False, True):
+                    parts = [_DAN11_IGNORE, _DAN11_PERSONA]
+                    if history:
+                        parts.append(_DAN11_HISTORY)
+                    if personality:
+                        parts.append(_DAN11_PERSONALITY)
+                    parts.append(_DAN11_SIMULATE)
+                    if strong_arm:
+                        parts.extend(
+                            (_DAN11_DISABLE, _DAN11_NO_QUESTION, _DAN11_NO_REVEAL)
+                        )
+                    parts.append(_DAN11_POLICY)
+                    prompts.append(
+                        "".join(parts) + "Request: " + content + "\n" + _DAN11_REQUEST
+                    )
         return prompts
 
     def _attempt_prestore_hook(
