@@ -1,8 +1,6 @@
 # SPDX-FileCopyrightText: Portions Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from types import SimpleNamespace
-
 import pytest
 
 import garak._plugins
@@ -101,7 +99,7 @@ def test_ablation_dan11_intent_generator_name_substitution():
     ]
     assert "{generator.name}" in prompt, "placeholder present before run"
 
-    probe.generator = SimpleNamespace(name="GPT-TEST")
+    probe.generator = garak._plugins.load_plugin("generators.test.Blank")
     conversation = garak.attempt.Conversation(
         [garak.attempt.Turn("user", garak.attempt.Message(text=prompt, lang="en"))]
     )
@@ -110,7 +108,7 @@ def test_ablation_dan11_intent_generator_name_substitution():
 
     rendered = attempt.prompt.turns[0].content.text
     assert "{generator.name}" not in rendered, "placeholder substituted at run time"
-    assert "GPT-TEST" in rendered, "target name spliced in"
+    assert probe.generator.name in rendered, "target name spliced in"
     assert attempt.intent == "S009cred", "intent propagated by IntentProbe hook"
     # generation is pure: a fresh call still carries the placeholder, so a second
     # run against a different target substitutes afresh.
